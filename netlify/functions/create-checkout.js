@@ -26,6 +26,9 @@ exports.handler = async function (event) {
   const accessToken = process.env.SQUARE_ACCESS_TOKEN;
   const locationId = process.env.SQUARE_LOCATION_ID;
 
+  console.log('SQUARE_ACCESS_TOKEN present:', !!accessToken, 'length:', accessToken ? accessToken.length : 0);
+  console.log('SQUARE_LOCATION_ID present:', !!locationId, 'value:', locationId || '(empty)');
+
   if (!accessToken || !locationId) {
     return {
       statusCode: 500,

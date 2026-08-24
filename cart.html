@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Cart — Glow by P</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="nav-inner">
+    <a href="index.html" class="logo-link"><img src="images/glow-by-p-logo.png" alt="Glow by P — Holistic Esthetician" class="logo-img"></a>
+    <nav class="nav-links" id="navLinks">
+      <a href="index.html">Home</a>
+      <a href="about.html">About Me</a>
+      <a href="services.html">Services</a>
+      <a href="shop.html">Shop</a>
+      <a href="reviews.html">Reviews</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div class="nav-right">
+      <a href="cart.html" class="cart-link" aria-label="View cart" aria-current="page">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.4"><path d="M6 8h12l-1.2 11a2 2 0 0 1-2 1.8H9.2a2 2 0 0 1-2-1.8L6 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+        <span class="cart-count" data-cart-count>0</span>
+      </a>
+      <a href="https://glowbyp.glossgenius.com/" target="_blank" rel="noopener" class="nav-book">Book Now</a>
+    </div>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false"><span></span><span></span><span></span></button>
+  </div>
+</header>
+<div class="nav-scrim"></div>
+
+<main>
+  <section class="section" style="padding-top: clamp(48px,8vw,90px);">
+    <div class="wrap" style="max-width:760px;" data-cart-root>
+      <span class="eyebrow">Your Picks</span>
+      <h1 class="h-xl mt-16">Your Cart</h1>
+      <p class="lede mt-16">Adjust quantities here, then check out once — everything in your cart is paid together, securely through Square.</p>
+
+      <p data-cart-empty class="mt-24" style="opacity:0.7;">Your cart is empty. <a href="shop.html" style="border-bottom:1px solid var(--olive);">Browse the shop →</a></p>
+
+      <div data-cart-list class="mt-40"></div>
+
+      <div class="mt-40" style="display:flex; justify-content:space-between; align-items:center; padding-top:24px; border-top:1px solid var(--line);">
+        <span class="h-md">Total</span>
+        <span class="h-md" data-cart-total>$0.00</span>
+      </div>
+
+      <div class="btn-row">
+        <a href="shop.html" class="btn btn-line">Continue Shopping</a>
+        <button class="btn btn-solid" data-checkout>Checkout with Square</button>
+      </div>
+
+      <p class="mt-24" style="opacity:0.55; font-size:0.85rem;">You'll be taken to Square's secure checkout to complete payment for everything in your cart.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="index.html" class="logo">Glow <em>by</em> P</a>
+        <p>Holistic Esthetics &middot; Lymph Focus &middot; Organic Products</p>
+      </div>
+      <div class="footer-cols">
+        <div class="footer-col">
+          <h4>Explore</h4>
+          <a href="about.html">About Me</a>
+          <a href="services.html">Services</a>
+          <a href="shop.html">Shop</a>
+          <a href="reviews.html">Reviews</a>
+        </div>
+        <div class="footer-col">
+          <h4>Connect</h4>
+          <a href="https://www.instagram.com/glow_by_p" target="_blank" rel="noopener">Instagram</a>
+          <a href="contact.html">Email</a>
+          <a href="book.html">Book Now</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Glow by P. All rights reserved.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Let's Connect — Glow by P</title>
+<meta name="description" content="Contact Glow by P — location, hours, and a message form.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="nav-inner">
+    <a href="index.html" class="logo-link"><img src="images/glow-by-p-logo.png" alt="Glow by P — Holistic Esthetician" class="logo-img"></a>
+    <nav class="nav-links" id="navLinks">
+      <a href="index.html">Home</a>
+      <a href="about.html">About Me</a>
+      <a href="services.html">Services</a>
+      <a href="shop.html">Shop</a>
+      <a href="reviews.html">Reviews</a>
+      <a href="contact.html" aria-current="page">Contact</a>
+    </nav>
+    <div class="nav-right">
+      <a href="cart.html" class="cart-link" aria-label="View cart">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.4"><path d="M6 8h12l-1.2 11a2 2 0 0 1-2 1.8H9.2a2 2 0 0 1-2-1.8L6 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+        <span class="cart-count" data-cart-count>0</span>
+      </a>
+      <a href="https://glowbyp.glossgenius.com/" target="_blank" rel="noopener" class="nav-book">Book Now</a>
+    </div>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false"><span></span><span></span><span></span></button>
+  </div>
+</header>
+<div class="nav-scrim"></div>
+
+<main>
+
+  <section class="section" style="padding-top: clamp(48px,8vw,90px);">
+    <div class="wrap grid-2">
+      <div class="reveal in">
+        <span class="eyebrow">Have a Question Before Booking or Ordering?</span>
+        <h1 class="h-xl mt-16">Let's Connect</h1>
+        <p class="lede mt-16">Send me a message and I'll be happy to help you choose the right service or point you in the right direction for your skincare routine.</p>
+
+        <div class="mt-40">
+          <span class="eyebrow">Studio Location</span>
+          <p class="mt-8" style="font-family:var(--serif); font-size:1.05rem;">Holistic Haven, Murrieta, CA, 92563</p>
+        </div>
+        <div class="mt-24">
+          <span class="eyebrow">Hours</span>
+          <p class="mt-8" style="opacity:0.8;">Hours placeholder — add your studio hours</p>
+        </div>
+        <div class="mt-24">
+          <span class="eyebrow">Email</span>
+          <p class="mt-8" style="font-family:var(--serif); font-size:1.05rem;">hello@glowbyp.com</p>
+        </div>
+        <div class="mt-24">
+          <span class="eyebrow">Instagram</span>
+          <p class="mt-8"><a href="#" style="border-bottom:1px solid var(--olive);">@glowbyp</a></p>
+        </div>
+        <div class="mt-24">
+          <span class="eyebrow">Booking</span>
+          <p class="mt-8"><a href="book.html" style="border-bottom:1px solid var(--olive);">Book an appointment →</a></p>
+        </div>
+      </div>
+
+      <div class="reveal">
+        <form data-demo-form data-success="Thank you — your message has been sent. Peyton will reply within 1–2 business days." novalidate style="background:var(--sage-tint); border:1px solid var(--line-soft); padding:34px;">
+          <div class="field">
+            <label for="cname">Name</label>
+            <input id="cname" name="name" type="text" placeholder="Your full name" required>
+          </div>
+          <div class="field">
+            <label for="cemail">Email</label>
+            <input id="cemail" name="email" type="email" placeholder="you@email.com" required>
+          </div>
+          <div class="field">
+            <label for="cphone">Phone</label>
+            <input id="cphone" name="phone" type="tel" placeholder="(555) 555-5555">
+          </div>
+          <div class="field">
+            <label for="cmessage">Message</label>
+            <textarea id="cmessage" name="message" rows="4" placeholder="How can I help?"></textarea>
+          </div>
+          <button type="submit" class="btn btn-solid btn-full">Send Message</button>
+          <p data-form-msg class="mt-16" style="font-size:0.85rem; color:var(--olive);"></p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="index.html" class="logo">Glow <em>by</em> P</a>
+        <p>Holistic Esthetics &middot; Lymph Focus &middot; Organic Products</p>
+      </div>
+      <div class="footer-cols">
+        <div class="footer-col">
+          <h4>Explore</h4>
+          <a href="about.html">About Me</a>
+          <a href="services.html">Services</a>
+          <a href="shop.html">Shop</a>
+          <a href="reviews.html">Reviews</a>
+        </div>
+        <div class="footer-col">
+          <h4>Connect</h4>
+          <a href="https://www.instagram.com/glow_by_p" target="_blank" rel="noopener">Instagram</a>
+          <a href="contact.html">Email</a>
+          <a href="book.html">Book Now</a>
+        </div>
+        <div class="footer-col">
+          <h4>Coming Soon</h4>
+          <span>Skin Journal</span>
+          <span>Resources</span>
+          <span>FAQ</span>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Glow by P. All rights reserved.</span>
+      <span>Content is educational and not intended to diagnose, treat, cure, or prevent any condition.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

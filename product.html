@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gentle Cream Cleanser — Glow by P Shop</title>
+<meta name="description" content="Product detail page template for Glow by P skincare products.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<!--
+  PRODUCT PAGE TEMPLATE
+  This page shows the full layout for one product (Gentle Cream Cleanser)
+  as a working example. Duplicate this file per product, or replace the
+  content block below with data pulled dynamically from your commerce
+  platform (Shopify, Square, etc.) once connected — the Add to Cart /
+  Buy Now buttons already carry the data-product attributes that logic needs.
+-->
+
+<header class="site-header">
+  <div class="nav-inner">
+    <a href="index.html" class="logo-link"><img src="images/glow-by-p-logo.png" alt="Glow by P — Holistic Esthetician" class="logo-img"></a>
+    <nav class="nav-links" id="navLinks">
+      <a href="index.html">Home</a>
+      <a href="about.html">About Me</a>
+      <a href="services.html">Services</a>
+      <a href="shop.html" aria-current="page">Shop</a>
+      <a href="reviews.html">Reviews</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div class="nav-right">
+      <a href="cart.html" class="cart-link" aria-label="View cart">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.4"><path d="M6 8h12l-1.2 11a2 2 0 0 1-2 1.8H9.2a2 2 0 0 1-2-1.8L6 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+        <span class="cart-count" data-cart-count>0</span>
+      </a>
+      <a href="https://glowbyp.glossgenius.com/" target="_blank" rel="noopener" class="nav-book">Book Now</a>
+    </div>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false"><span></span><span></span><span></span></button>
+  </div>
+</header>
+<div class="nav-scrim"></div>
+
+<main>
+
+  <section class="section" style="padding-top: clamp(40px,7vw,72px); padding-bottom:20px;">
+    <div class="wrap">
+      <a href="shop.html" class="path-link">← Back to Shop</a>
+    </div>
+  </section>
+
+  <section class="section bg-cream" style="padding-top:16px;">
+    <div class="wrap grid-2" style="align-items:flex-start;">
+      <div class="reveal in">
+        <div class="ph ph-portrait"><span class="ph-label">Product photo placeholder — primary image</span></div>
+        <div class="grid-3 mt-16">
+          <div class="ph ph-square"><span class="ph-label">Detail shot</span></div>
+          <div class="ph ph-square"><span class="ph-label">Texture shot</span></div>
+          <div class="ph ph-square"><span class="ph-label">In-use shot</span></div>
+        </div>
+      </div>
+
+      <div class="reveal">
+        <span class="eyebrow">Cleansers</span>
+        <h1 class="h-xl mt-16">Gentle Cream Cleanser</h1>
+        <p class="mt-8" style="opacity:0.6; font-size:0.9rem;">4 fl oz</p>
+        <p class="h-md mt-16" style="font-family:var(--serif); color:var(--espresso);">$32</p>
+        <span class="stock-note" id="stockNote"></span>
+        <p class="lede mt-24" style="max-width:none;">A soft, non-stripping daily cleanser that removes makeup, SPF, and impurities without disturbing the skin barrier. Formulated to leave skin feeling calm and comfortable&mdash;never tight.</p>
+
+        <div class="btn-row">
+          <button class="btn btn-line btn-full" data-add-to-cart data-stock-target="stockNote" data-product-id="cleanser-1" data-product-name="Gentle Cream Cleanser" data-product-price="32" data-stock="14">Add to Cart</button>
+          <button class="btn btn-solid btn-full" data-buy-now data-stock-target="stockNote" data-product-id="cleanser-1" data-product-name="Gentle Cream Cleanser" data-product-price="32" data-stock="14">Buy Now</button>
+        </div>
+
+        <div class="mt-56">
+          <h3 class="h-md">Product Details</h3>
+          <p class="mt-8" style="opacity:0.78;">A cream-to-milk formula that emulsifies with water for a gentle, effective cleanse. Free of sulfates and synthetic fragrance.</p>
+        </div>
+        <hr style="border:none;border-top:1px solid var(--line); margin:24px 0;">
+        <div>
+          <h3 class="h-md">How to Use</h3>
+          <p class="mt-8" style="opacity:0.78;">Massage a small amount onto damp skin morning and night. Rinse with lukewarm water and follow with your toner or serum.</p>
+        </div>
+        <hr style="border:none;border-top:1px solid var(--line); margin:24px 0;">
+        <div>
+          <h3 class="h-md">Who It's Best For</h3>
+          <p class="mt-8" style="opacity:0.78;">Best suited for normal, dry, or sensitive skin looking for a gentle daily cleanse. Not sure if this is right for you? <a href="contact.html" style="border-bottom:1px solid var(--olive);">Send Peyton a message.</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section bg-sage-tint">
+    <div class="wrap center mx-auto reveal" style="max-width:560px;">
+      <span class="eyebrow">Not Sure What Your Skin Needs?</span>
+      <h2 class="h-lg mt-16">Ask before you order.</h2>
+      <div class="btn-row" style="justify-content:center;">
+        <a href="contact.html" class="btn btn-line">Contact Peyton</a>
+        <a href="https://glowbyp.glossgenius.com/" target="_blank" rel="noopener" class="btn btn-solid">Book a Consultation</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="index.html" class="logo">Glow <em>by</em> P</a>
+        <p>Holistic Esthetics &middot; Lymph Focus &middot; Organic Products</p>
+      </div>
+      <div class="footer-cols">
+        <div class="footer-col">
+          <h4>Explore</h4>
+          <a href="about.html">About Me</a>
+          <a href="services.html">Services</a>
+          <a href="shop.html">Shop</a>
+          <a href="reviews.html">Reviews</a>
+        </div>
+        <div class="footer-col">
+          <h4>Connect</h4>
+          <a href="https://www.instagram.com/glow_by_p" target="_blank" rel="noopener">Instagram</a>
+          <a href="contact.html">Email</a>
+          <a href="book.html">Book Now</a>
+        </div>
+        <div class="footer-col">
+          <h4>Coming Soon</h4>
+          <span>Skin Journal</span>
+          <span>Resources</span>
+          <span>FAQ</span>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Glow by P. All rights reserved.</span>
+      <span>Content is educational and not intended to diagnose, treat, cure, or prevent any condition.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

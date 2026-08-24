@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shop Skincare — Glow by P</title>
+<meta name="description" content="Shop Peyton's recommended Glow by P skincare online — cleansers, toners, serums, moisturizers, SPF, acne care, and masks.">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .cat-section{ padding: 44px 0; border-bottom:1px solid var(--line-soft); }
+  .cat-section:last-of-type{ border-bottom:none; }
+  .cat-head{ display:flex; justify-content:space-between; align-items:flex-end; gap:16px; flex-wrap:wrap; margin-bottom:22px; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="nav-inner">
+    <a href="index.html" class="logo-link"><img src="images/glow-by-p-logo.png" alt="Glow by P — Holistic Esthetician" class="logo-img"></a>
+    <nav class="nav-links" id="navLinks">
+      <a href="index.html">Home</a>
+      <a href="about.html">About Me</a>
+      <a href="services.html">Services</a>
+      <a href="shop.html" aria-current="page">Shop</a>
+      <a href="reviews.html">Reviews</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div class="nav-right">
+      <a href="cart.html" class="cart-link" aria-label="View cart">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.4"><path d="M6 8h12l-1.2 11a2 2 0 0 1-2 1.8H9.2a2 2 0 0 1-2-1.8L6 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+        <span class="cart-count" data-cart-count>0</span>
+      </a>
+      <a href="https://glowbyp.glossgenius.com/" target="_blank" rel="noopener" class="nav-book">Book Now</a>
+    </div>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false"><span></span><span></span><span></span></button>
+  </div>
+</header>
+<div class="nav-scrim"></div>
+
+<main>
+
+  <section class="section" style="padding-top: clamp(48px,8vw,90px); padding-bottom:30px;">
+    <div class="wrap center mx-auto reveal in" style="max-width:640px;">
+      <span class="eyebrow">The Glow by P Shop</span>
+      <h1 class="h-xl mt-16">Shop Your Routine</h1>
+      <p class="lede mx-auto mt-16">Your skincare routine shouldn't stop when you leave the studio. Shop your recommended products and easily reorder your favorites online.</p>
+      <div class="chip-row mt-24" style="justify-content:center;">
+        <a href="#cleansers" class="chip">Cleansers</a>
+        <a href="#toners" class="chip">Toners + Mists</a>
+        <a href="#serums" class="chip">Serums</a>
+        <a href="#moisturizers" class="chip">Moisturizers</a>
+        <a href="#spf" class="chip">SPF</a>
+        <a href="#acne-care" class="chip">Acne Care</a>
+        <a href="#masks" class="chip">Masks + Treatments</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section bg-cream" style="padding-top:0;">
+    <div class="wrap">
+
+      <div id="cleansers" class="cat-section reveal">
+        <div class="cat-head"><div><span class="eyebrow">Category</span><h2 class="h-lg mt-8">Cleansers</h2></div></div>
+        <div class="grid-4">
+          <div class="product-card">
+            <a href="product.html?id=cleanser-1"><div class="ph ph-product"><span class="ph-label">Product photo placeholder</span></div></a>
+            <div class="product-body">
+              <a href="product.html?id=cleanser-1"><span class="product-name">Gentle Cream Cleanser</span></a>
+              <p class="product-desc">Soft, non-stripping daily cleanser. 4 fl oz.</p>
+              <span class="product-price">$32</span>
+              <div class="product-actions">
+                <button class="btn btn-line" data-add-to-cart data-product-id="cleanser-1" data-product-name="Gentle Cream Cleanser" data-product-price="32" data-stock="14">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="toners" class="cat-section reveal">
+        <div class="cat-head"><div><span class="eyebrow">Category</span><h2 class="h-lg mt-8">Toners + Mists</h2></div></div>
+        <div class="grid-4">
+          <div class="product-card">
+            <a href="product.html?id=mist-1"><div class="ph ph-product"><span class="ph-label">Product photo placeholder</span></div></a>
+            <div class="product-body">
+              <a href="product.html?id=mist-1"><span class="product-name">Balancing Facial Mist</span></a>
+              <p class="product-desc">Lightweight toner mist for everyday hydration. 3.4 fl oz.</p>
+              <span class="product-price">$26</span>
+              <div class="product-actions">
+                <button class="btn btn-line" data-add-to-cart data-product-id="mist-1" data-product-name="Balancing Facial Mist" data-product-price="26" data-stock="4">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="serums" class="cat-section reveal">
+        <div class="cat-head"><div><span class="eyebrow">Category</span><h2 class="h-lg mt-8">Serums</h2></div></div>
+        <div class="grid-4">
+          <div class="product-card">
+            <a href="product.html?id=serum-1"><div class="ph ph-product"><span class="ph-label">Product photo placeholder</span></div></a>
+            <div class="product-body">
+              <a href="product.html?id=serum-1"><span class="product-name">Nourishing Face Serum</span></a>
+              <p class="product-desc">Concentrated daily support serum. 1 fl oz.</p>
+              <span class="product-price">$48</span>
+              <div class="product-actions">
+                <button class="btn btn-line" data-add-to-cart data-product-id="serum-1" data-product-name="Nourishing Face Serum" data-product-price="48" data-stock="0">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="moisturizers" class="cat-section reveal">
+        <div class="cat-head"><div><span class="eyebrow">Category</span><h2 class="h-lg mt-8">Moisturizers</h2></div></div>
+        <div class="grid-4">
+          <div class="product-card">
+            <a href="product.html?id=moisturizer-1"><div class="ph ph-product"><span class="ph-label">Product photo placeholder</span></div></a>
+            <div class="product-body">
+              <a href="product.html?id=moisturizer-1"><span class="product-name">Everyday Nourishing Cream</span></a>
+              <p class="product-desc">A daily moisturizer for balanced hydration. 2 fl oz.</p>
+              <span class="product-price">$44</span>
+              <div class="product-actions">
+                <button class="btn btn-line" data-add-to-cart data-product-id="moisturizer-1" data-product-name="Everyday Nourishing Cream" data-product-price="44" data-stock="9">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="spf" class="cat-section reveal">
+        <div class="cat-head"><div><span class="eyebrow">Category</span><h2 class="h-lg mt-8">SPF</h2></div></div>
+        <div class="grid-4">
+          <div class="product-card">
+            <a href="product.html?id=spf-1"><div class="ph ph-product"><span class="ph-label">Product photo placeholder</span></div></a>
+            <div class="product-body">
+              <a href="product.html?id=spf-1"><span class="product-name">Daily Mineral SPF</span></a>
+              <p class="product-desc">Lightweight, everyday mineral sunscreen. 1.7 fl oz.</p>
+              <span class="product-price">$38</span>
+              <div class="product-actions">
+                <button class="btn btn-line" data-add-to-cart data-product-id="spf-1" data-product-name="Daily Mineral SPF" data-product-price="38" data-stock="6">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="acne-care" class="cat-section reveal">
+        <div class="cat-head"><div><span class="eyebrow">Category</span><h2 class="h-lg mt-8">Acne Care</h2></div></div>
+        <div class="grid-4">
+          <div class="product-card">
+            <a href="product.html?id=acne-1"><div class="ph ph-product"><span class="ph-label">Product photo placeholder</span></div></a>
+            <div class="product-body">
+              <a href="product.html?id=acne-1"><span class="product-name">Clarifying Spot Gel</span></a>
+              <p class="product-desc">A targeted gel for breakout-prone areas. 0.5 fl oz.</p>
+              <span class="product-price">$28</span>
+              <div class="product-actions">
+                <button class="btn btn-line" data-add-to-cart data-product-id="acne-1" data-product-name="Clarifying Spot Gel" data-product-price="28" data-stock="3">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="masks" class="cat-section reveal">
+        <div class="cat-head"><div><span class="eyebrow">Category</span><h2 class="h-lg mt-8">Masks + Treatments</h2></div></div>
+        <div class="grid-4">
+          <div class="product-card">
+            <a href="product.html?id=mask-1"><div class="ph ph-product"><span class="ph-label">Product photo placeholder</span></div></a>
+            <div class="product-body">
+              <a href="product.html?id=mask-1"><span class="product-name">Weekly Clay Mask</span></a>
+              <p class="product-desc">A mineral-rich clay mask for a weekly reset. 3 oz.</p>
+              <span class="product-price">$34</span>
+              <div class="product-actions">
+                <button class="btn btn-line" data-add-to-cart data-product-id="mask-1" data-product-name="Weekly Clay Mask" data-product-price="34" data-stock="20">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cat-section reveal center">
+        <span class="badge-soon">More products added regularly</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- NEED HELP CHOOSING -->
+  <section class="section bg-sage">
+    <div class="wrap center mx-auto reveal" style="max-width:600px;">
+      <span class="eyebrow">Not Sure What Your Skin Needs?</span>
+      <h2 class="h-lg mt-16">Choosing skincare can feel overwhelming.</h2>
+      <p class="mt-16" style="opacity:0.9;">If you're unsure what products are best for your skin, reach out before ordering or book a consultation.</p>
+      <div class="btn-row" style="justify-content:center;">
+        <a href="contact.html" class="btn btn-line">Contact Peyton</a>
+        <a href="https://glowbyp.glossgenius.com/" target="_blank" rel="noopener" class="btn btn-solid">Book a Consultation</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="index.html" class="logo">Glow <em>by</em> P</a>
+        <p>Holistic Esthetics &middot; Lymph Focus &middot; Organic Products</p>
+      </div>
+      <div class="footer-cols">
+        <div class="footer-col">
+          <h4>Explore</h4>
+          <a href="about.html">About Me</a>
+          <a href="services.html">Services</a>
+          <a href="shop.html">Shop</a>
+          <a href="reviews.html">Reviews</a>
+        </div>
+        <div class="footer-col">
+          <h4>Connect</h4>
+          <a href="https://www.instagram.com/glow_by_p" target="_blank" rel="noopener">Instagram</a>
+          <a href="contact.html">Email</a>
+          <a href="book.html">Book Now</a>
+        </div>
+        <div class="footer-col">
+          <h4>Coming Soon</h4>
+          <span>Skin Journal</span>
+          <span>Resources</span>
+          <span>FAQ</span>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Glow by P. All rights reserved.</span>
+      <span>Content is educational and not intended to diagnose, treat, cure, or prevent any condition.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

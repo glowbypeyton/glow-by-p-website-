@@ -59,6 +59,11 @@ document.addEventListener('DOMContentLoaded', function () {
     var originalText = triggerBtn ? triggerBtn.textContent : null;
     if (triggerBtn) { triggerBtn.disabled = true; triggerBtn.textContent = 'Connecting to Square…'; }
 
+    // If the shopper is signed in to their client portal, record the order so
+    // it appears in their order history and in the studio admin portal. Never
+    // blocks checkout — a failure here is silent.
+    recordPortalOrder(items);
+
     fetch('/.netlify/functions/create-checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -78,6 +83,29 @@ document.addEventListener('DOMContentLoaded', function () {
         if (triggerBtn) { triggerBtn.disabled = false; triggerBtn.textContent = originalText; }
       });
   }
+
+
+  /* ---------------- Client portal: remember an order ---------------- */
+  function recordPortalOrder (items) {
+    try {
+      fetch('/api/portal/orders', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cart: items })
+      }).catch(function () {});
+    } catch (e) { /* signed out shoppers simply have no history to write */ }
+  }
+
+  /* ---------------- Identity email links ----------------
+     Confirmation and password-reset emails land on whatever page the link
+     points at, carrying a token in the URL hash. Hand those to the portal. */
+  (function forwardIdentityCallback () {
+    var hash = window.location.hash || '';
+    if (!/(confirmation_token|recovery_token|invite_token|email_change_token)=/.test(hash)) return;
+    if (/portal\.html$/.test(window.location.pathname)) return;
+    window.location.replace('portal.html' + hash);
+  })();
 
   /* ---------------- Newsletter / contact / booking forms (demo only) ---------------- */
   document.querySelectorAll('[data-demo-form]').forEach(function (form) {

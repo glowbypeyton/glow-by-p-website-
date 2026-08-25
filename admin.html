@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Studio Admin — Glow by P</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="nav-inner">
+    <a href="index.html" class="logo-link"><img src="images/glow-by-p-logo.png" alt="Glow by P — Holistic Esthetician" class="logo-img"></a>
+    <nav class="nav-links" id="navLinks">
+      <a href="index.html">Home</a>
+      <a href="shop.html">Shop</a>
+      <a href="reviews.html">Reviews</a>
+      <a href="portal.html">Client Portal</a>
+      <a href="admin.html" aria-current="page">Studio Admin</a>
+    </nav>
+    <div class="nav-right">
+      <a href="https://glowbyp.glossgenius.com/" target="_blank" rel="noopener" class="nav-book">GlossGenius</a>
+    </div>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false"><span></span><span></span><span></span></button>
+  </div>
+</header>
+<div class="nav-scrim"></div>
+
+<main class="portal-main">
+
+  <div class="portal-shell" id="adminLoading">
+    <p class="portal-loading">Checking your access…</p>
+  </div>
+
+  <!-- Sign in (studio only) -->
+  <section class="portal-shell narrow hidden" id="adminAuth">
+    <div class="center">
+      <span class="eyebrow">Studio Only</span>
+      <h1 class="h-lg mt-16">Admin Sign In</h1>
+    </div>
+    <div class="auth-card mt-40">
+      <div id="adminAuthMsg" class="hidden"></div>
+      <form id="adminSignInForm" novalidate>
+        <div class="field">
+          <label for="adminEmail">Email</label>
+          <input type="email" id="adminEmail" autocomplete="email" required>
+        </div>
+        <div class="field">
+          <label for="adminPassword">Password</label>
+          <input type="password" id="adminPassword" autocomplete="current-password" required>
+        </div>
+        <button type="submit" class="btn btn-solid btn-full">Sign In</button>
+      </form>
+      <p class="auth-alt">Client accounts sign in on the <a href="portal.html" style="color:var(--forest);font-weight:600;">client portal</a>.</p>
+    </div>
+  </section>
+
+  <!-- Admin dashboard -->
+  <section class="portal-shell hidden" id="adminView">
+    <div class="portal-head">
+      <div>
+        <span class="eyebrow">Studio Admin</span>
+        <h1 class="h-lg mt-16">Glow by P Dashboard</h1>
+        <p id="adminWho"></p>
+      </div>
+      <div class="portal-head-actions">
+        <a href="https://glowbyp.glossgenius.com/" target="_blank" rel="noopener" class="btn btn-line btn-sm">GlossGenius</a>
+        <button type="button" class="btn btn-line btn-sm" id="adminSignOut">Sign Out</button>
+      </div>
+    </div>
+
+    <div class="stat-row mt-24" id="statRow"></div>
+
+    <div class="portal-tabs" role="tablist" aria-label="Admin sections">
+      <button type="button" role="tab" data-admin-tab="clients" aria-selected="true">Clients</button>
+      <button type="button" role="tab" data-admin-tab="reviews" aria-selected="false">Reviews &amp; Photos</button>
+    </div>
+
+    <div id="adminMsg" class="hidden"></div>
+
+    <!-- ============ CLIENTS ============ -->
+    <div data-admin-panel="clients">
+      <div class="panel-grid">
+        <div class="panel">
+          <div class="panel-head"><h2>Client Accounts</h2></div>
+          <div class="field search-field">
+            <label for="clientSearch">Search</label>
+            <input type="search" id="clientSearch" placeholder="Name or email">
+          </div>
+          <div class="client-list" id="clientList"></div>
+        </div>
+
+        <div id="clientDetail">
+          <div class="panel"><p class="portal-empty">Choose a client on the left to see their routine, photos, visits and orders.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ REVIEWS ============ -->
+    <div data-admin-panel="reviews" class="hidden">
+      <div class="panel">
+        <div class="panel-head"><h2>Add a Testimonial</h2></div>
+        <p class="panel-note">Published testimonials appear on the Client Love page. You can attach before/after photos to any of them below.</p>
+        <form id="reviewCreateForm">
+          <div class="field-inline">
+            <div class="field"><label for="reviewName">Client name as shown</label><input type="text" id="reviewName" maxlength="120" required></div>
+            <div class="field"><label for="reviewService">Service <span style="opacity:.6;">(optional)</span></label><input type="text" id="reviewService" maxlength="120" placeholder="Acne Facial"></div>
+            <div class="field">
+              <label for="reviewRating">Stars</label>
+              <select id="reviewRating">
+                <option value="5" selected>5</option><option value="4">4</option>
+                <option value="3">3</option><option value="2">2</option><option value="1">1</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label for="reviewQuote">Their words</label>
+            <textarea id="reviewQuote" rows="3" maxlength="2000" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-solid btn-sm">Add Testimonial</button>
+        </form>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h2>All Testimonials</h2></div>
+        <div id="reviewList"></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-bottom">
+      <span>&copy; 2026 Glow by P — studio admin.</span>
+      <span>Client information is private. Sign out when you're finished.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+<script src="portal-lib.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>

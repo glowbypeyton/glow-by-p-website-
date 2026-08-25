@@ -41,8 +41,11 @@ Cart, Reviews, Contact, and Book Now — plus a 404 page. No build step required
   ready to connect Shopify, Square, or another storefront, swap the cart
   logic in `script.js` for real checkout calls, or replace the buttons with
   direct links to your storefront's product pages.
-- **Reviews** are clearly marked placeholders — swap in real client
-  testimonials whenever you have them.
+- **Reviews** are no longer hard-coded — the Client Love page and the
+  homepage preview both read published reviews out of the database. Add them
+  (with before/after photos) from the Reviews & Photos tab of the admin
+  portal; until you add the first one, the page shows a friendly
+  "check back soon" note.
 - **Contact info** (address, hours) — placeholders to fill in.
 - **`product.html`** is a single working example (Gentle Cream Cleanser).
   Duplicate it per product, or generate these pages dynamically once
@@ -147,14 +150,91 @@ services.html   Services
 shop.html       Shop Skincare (category grid)
 product.html    Product detail template
 cart.html       Cart (localStorage demo)
-reviews.html    Client Love
+reviews.html    Client Love (reviews load from the database)
 contact.html    Let's Connect
 book.html       Book Your Glow + FAQ
+portal.html     Client portal (sign in / sign up + dashboard)
+admin.html      Admin portal (studio only)
 404.html        Not found page
 styles.css      Shared design system
 script.js       Nav, scroll reveals, FAQ accordion, cart, forms
+portal-lib.js   Shared portal helpers (fetch wrapper, image resizing, dates)
+portal.js       Client portal behaviour
+admin.js        Admin portal behaviour
+reviews-feed.js Renders published reviews + before/after photos
+db/schema.ts    Database tables (Drizzle)
+lib/portal.ts   Shared server helpers (sessions, admin check, image decoding)
+netlify/functions/  API: auth, portal, admin, photos, reviews, create-checkout
+netlify/database/migrations/  SQL migrations, applied automatically on deploy
 netlify.toml    Netlify config
 ```
+
+## Client portal and admin portal
+
+Two new pages sit on top of a Netlify Database (Postgres), Netlify Blobs for
+the photo files, and Netlify Identity for the log-ins.
+
+**`portal.html` — for your clients.** They create an account with an email and
+password, confirm it from the email Netlify sends, then sign in to see:
+
+- **My Routine** — the AM / PM / weekly steps you set for them, with how-to-use
+  notes and optional product links.
+- **Progress Photos** — everything you have added for them, plus their own
+  uploads. They can add and delete their own photos; photos you upload can only
+  be removed by you.
+- **Appointments** — the visits you have logged, with a Book Again button that
+  goes to your GlossGenius page.
+- **Skincare Orders** — orders placed through the shop while they were signed
+  in, plus anything you log by hand.
+- **My Details** — name, phone, skin type, concerns, and a password change.
+
+**`admin.html` — for you only.** Sign in with the same form using your studio
+email. You get a stat row across the top and two tabs:
+
+- **Clients** — a searchable list of everyone who has made an account. Click a
+  client to edit their details, keep private notes only you can see, rebuild
+  their routine step by step, upload progress photos, log an appointment, and
+  log or update a skincare order.
+- **Reviews & Photos** — write a testimonial, set the star rating, service,
+  display order, and whether it is published, then attach before/after photos
+  either by uploading files or by pulling one straight from that client's
+  progress photos.
+
+Both pages are marked `noindex` so they stay out of search results.
+
+### Setup checklist
+
+1. **Turn on Identity.** In Netlify: *Site configuration → Identity → Enable
+   Identity*. Under *Registration*, leave it on **Open** so clients can sign
+   themselves up (switch to **Invite only** if you would rather send invites —
+   the portal handles invite links too).
+2. **Set the admin email.** By default, `glow.by.peyton@gmail.com` is treated as
+   the studio admin. To use a different address or add a second one, add a site
+   environment variable `ADMIN_EMAILS` with a comma-separated list. You can also
+   give any user the `admin` role in the Identity dashboard.
+3. **Create your own account** at `/portal.html` using that admin email, confirm
+   it from the email, then open `/admin.html`.
+4. **The database sets itself up.** The tables are created from the migration in
+   `netlify/database/migrations/` the first time you deploy — nothing to run by
+   hand. If you ever change `db/schema.ts`, run `npm run db:generate` to write a
+   new migration, and deploy.
+
+Photos are stored in Netlify Blobs under random keys and served through
+`/api/photos/:id`, which checks that you are either the client who owns the
+photo or the admin before returning any bytes. Review photos are served
+publicly through `/api/review-photos/:id`, since they appear on the Client Love
+page.
+
+Client-side, photos are shrunk to about 1600px and re-encoded as JPEG before
+upload, so a phone photo uploads quickly and stays inside the serverless
+request limit.
+
+### A note on appointments
+
+GlossGenius does not publish an API, so appointments cannot be pulled in
+automatically. Instead you log each visit in the client's page in the admin
+portal (service, date, price, notes) and the client sees it in their history
+with a Book Again link back out to GlossGenius.
 
 ## Future pages
 

@@ -19,6 +19,7 @@
       <a href="shop.html">Shop</a>
       <a href="reviews.html" aria-current="page">Reviews</a>
       <a href="contact.html">Contact</a>
+      <a href="portal.html">Client Portal</a>
     </nav>
     <div class="nav-right">
       <a href="cart.html" class="cart-link" aria-label="View cart">
@@ -38,18 +39,13 @@
     <div class="wrap center mx-auto reveal in" style="max-width:600px;">
       <span class="eyebrow">Testimonials</span>
       <h1 class="h-xl mt-16">Client Love</h1>
-      <p class="lede mx-auto mt-16">Real reviews from real clients. Placeholders below will be replaced with actual testimonials.</p>
+      <p class="lede mx-auto mt-16">Real words from real clients — with the before and after photos to match.</p>
     </div>
   </section>
 
   <section class="section bg-cream" style="padding-top:0;">
-    <div class="wrap grid-3 reveal">
-      <div class="review-card"><div class="review-stars">★★★★★</div><p class="review-quote">&ldquo;Review placeholder &mdash; real client testimonial to be added.&rdquo;</p><div class="review-name">Client Name</div><div class="review-placeholder">Placeholder review</div></div>
-      <div class="review-card"><div class="review-stars">★★★★★</div><p class="review-quote">&ldquo;Review placeholder &mdash; real client testimonial to be added.&rdquo;</p><div class="review-name">Client Name</div><div class="review-placeholder">Placeholder review</div></div>
-      <div class="review-card"><div class="review-stars">★★★★★</div><p class="review-quote">&ldquo;Review placeholder &mdash; real client testimonial to be added.&rdquo;</p><div class="review-name">Client Name</div><div class="review-placeholder">Placeholder review</div></div>
-      <div class="review-card"><div class="review-stars">★★★★★</div><p class="review-quote">&ldquo;Review placeholder &mdash; real client testimonial to be added.&rdquo;</p><div class="review-name">Client Name</div><div class="review-placeholder">Placeholder review</div></div>
-      <div class="review-card"><div class="review-stars">★★★★★</div><p class="review-quote">&ldquo;Review placeholder &mdash; real client testimonial to be added.&rdquo;</p><div class="review-name">Client Name</div><div class="review-placeholder">Placeholder review</div></div>
-      <div class="review-card"><div class="review-stars">★★★★★</div><p class="review-quote">&ldquo;Review placeholder &mdash; real client testimonial to be added.&rdquo;</p><div class="review-name">Client Name</div><div class="review-placeholder">Placeholder review</div></div>
+    <div class="wrap grid-3 reveal" id="reviewGrid" data-reviews-feed>
+      <p class="portal-loading">Loading reviews…</p>
     </div>
   </section>
 
@@ -70,7 +66,7 @@
     <div class="footer-top">
       <div class="footer-brand">
         <a href="index.html" class="logo">Glow <em>by</em> P</a>
-        <p>Holistic Esthetics &middot; Lymph Focus &middot; Organic Products</p>
+        <p>Holistic Esthetics &middot; Lymphatic Focus &middot; Acne Specialist &middot; Organic Products</p>
       </div>
       <div class="footer-cols">
         <div class="footer-col">
@@ -84,7 +80,7 @@
           <h4>Connect</h4>
           <a href="https://www.instagram.com/glow_by_p" target="_blank" rel="noopener">Instagram</a>
           <a href="contact.html">Email</a>
-          <a href="book.html">Book Now</a>
+          <a href="portal.html">Client Portal</a>
         </div>
         <div class="footer-col">
           <h4>Coming Soon</h4>
@@ -102,5 +98,6 @@
 </footer>
 
 <script src="script.js"></script>
+<script src="reviews-feed.js"></script>
 </body>
 </html>

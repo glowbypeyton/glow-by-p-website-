@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Client Portal — Glow by P</title>
+<meta name="description" content="Sign in to your Glow by P client portal to see your skincare routine, progress photos, past appointments and skincare orders.">
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="nav-inner">
+    <a href="index.html" class="logo-link"><img src="images/glow-by-p-logo.png" alt="Glow by P — Holistic Esthetician" class="logo-img"></a>
+    <nav class="nav-links" id="navLinks">
+      <a href="index.html">Home</a>
+      <a href="about.html">About Me</a>
+      <a href="services.html">Services</a>
+      <a href="shop.html">Shop</a>
+      <a href="reviews.html">Reviews</a>
+      <a href="contact.html">Contact</a>
+      <a href="portal.html" aria-current="page">Client Portal</a>
+    </nav>
+    <div class="nav-right">
+      <a href="cart.html" class="cart-link" aria-label="View cart">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.4"><path d="M6 8h12l-1.2 11a2 2 0 0 1-2 1.8H9.2a2 2 0 0 1-2-1.8L6 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+        <span class="cart-count" data-cart-count>0</span>
+      </a>
+      <a href="https://glowbyp.glossgenius.com/" target="_blank" rel="noopener" class="nav-book">Book Now</a>
+    </div>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false"><span></span><span></span><span></span></button>
+  </div>
+</header>
+<div class="nav-scrim"></div>
+
+<main class="portal-main">
+
+  <!-- Loading state while the session is checked -->
+  <div class="portal-shell" id="portalLoading">
+    <p class="portal-loading">Loading your portal…</p>
+  </div>
+
+  <!-- ============ SIGNED OUT: sign in / create account ============ -->
+  <section class="portal-shell narrow hidden" id="authView">
+    <div class="center">
+      <span class="eyebrow">Client Portal</span>
+      <h1 class="h-lg mt-16">Your Skin Journey</h1>
+      <p class="lede mt-16 mx-auto">Sign in to see your personalised routine, progress photos, visit history and skincare orders.</p>
+    </div>
+
+    <div class="auth-card mt-40">
+      <div class="auth-switch" role="tablist" aria-label="Sign in or create an account">
+        <button type="button" id="tabSignIn" role="tab" aria-selected="true">Sign In</button>
+        <button type="button" id="tabSignUp" role="tab" aria-selected="false">Create Account</button>
+      </div>
+
+      <div id="authMsg" class="hidden"></div>
+
+      <!-- Sign in -->
+      <form id="signInForm" novalidate>
+        <div class="field">
+          <label for="signInEmail">Email</label>
+          <input type="email" id="signInEmail" name="email" autocomplete="email" required>
+        </div>
+        <div class="field">
+          <label for="signInPassword">Password</label>
+          <input type="password" id="signInPassword" name="password" autocomplete="current-password" required>
+        </div>
+        <button type="submit" class="btn btn-solid btn-full">Sign In</button>
+        <p class="auth-alt">Forgot your password? <button type="button" id="showRecover">Email me a reset link</button></p>
+      </form>
+
+      <!-- Create account -->
+      <form id="signUpForm" class="hidden" novalidate>
+        <div class="field">
+          <label for="signUpName">Full name</label>
+          <input type="text" id="signUpName" name="fullName" autocomplete="name" required>
+        </div>
+        <div class="field">
+          <label for="signUpEmail">Email</label>
+          <input type="email" id="signUpEmail" name="email" autocomplete="email" required>
+        </div>
+        <div class="field">
+          <label for="signUpPhone">Phone <span style="opacity:.6;">(optional)</span></label>
+          <input type="tel" id="signUpPhone" name="phone" autocomplete="tel">
+        </div>
+        <div class="field">
+          <label for="signUpPassword">Password <span style="opacity:.6;">(8+ characters)</span></label>
+          <input type="password" id="signUpPassword" name="password" autocomplete="new-password" minlength="8" required>
+        </div>
+        <button type="submit" class="btn btn-solid btn-full">Create My Account</button>
+        <p class="auth-alt">Already have an account? <button type="button" id="switchToSignIn">Sign in instead</button></p>
+      </form>
+
+      <!-- Forgot password -->
+      <form id="recoverForm" class="hidden" novalidate>
+        <p class="panel-note">Enter the email on your account and we'll send you a link to set a new password.</p>
+        <div class="field">
+          <label for="recoverEmail">Email</label>
+          <input type="email" id="recoverEmail" name="email" autocomplete="email" required>
+        </div>
+        <button type="submit" class="btn btn-solid btn-full">Send Reset Link</button>
+        <p class="auth-alt"><button type="button" id="cancelRecover">Back to sign in</button></p>
+      </form>
+
+      <!-- Set a new password (from an email link) -->
+      <form id="resetForm" class="hidden" novalidate>
+        <p class="panel-note" id="resetIntro">Choose a new password for your account.</p>
+        <div class="field">
+          <label for="resetPassword">New password <span style="opacity:.6;">(8+ characters)</span></label>
+          <input type="password" id="resetPassword" name="password" autocomplete="new-password" minlength="8" required>
+        </div>
+        <button type="submit" class="btn btn-solid btn-full">Save Password &amp; Sign In</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ============ SIGNED IN: dashboard ============ -->
+  <section class="portal-shell hidden" id="dashView">
+    <div class="portal-head">
+      <div>
+        <span class="eyebrow">Client Portal</span>
+        <h1 class="h-lg mt-16" id="greeting">Welcome back</h1>
+        <p id="memberSince"></p>
+      </div>
+      <div class="portal-head-actions">
+        <a href="admin.html" class="btn btn-line btn-sm hidden" id="adminLink">Admin Portal</a>
+        <a href="https://glowbyp.glossgenius.com/" target="_blank" rel="noopener" class="btn btn-solid btn-sm">Book a Visit</a>
+        <button type="button" class="btn btn-line btn-sm" id="signOutBtn">Sign Out</button>
+      </div>
+    </div>
+
+    <div class="portal-tabs" role="tablist" aria-label="Portal sections">
+      <button type="button" role="tab" data-tab="routine" aria-selected="true">My Routine</button>
+      <button type="button" role="tab" data-tab="photos" aria-selected="false">Progress Photos</button>
+      <button type="button" role="tab" data-tab="appointments" aria-selected="false">Appointments</button>
+      <button type="button" role="tab" data-tab="orders" aria-selected="false">Skincare Orders</button>
+      <button type="button" role="tab" data-tab="profile" aria-selected="false">My Details</button>
+    </div>
+
+    <div id="dashMsg" class="hidden"></div>
+
+    <!-- Routine -->
+    <div class="panel" data-panel="routine">
+      <div class="panel-head">
+        <h2>Your Skincare Routine</h2>
+        <a href="shop.html" class="btn btn-line btn-sm">Reorder Products</a>
+      </div>
+      <p class="panel-note" id="routineNote"></p>
+      <div id="routineBody"></div>
+    </div>
+
+    <!-- Progress photos -->
+    <div class="panel hidden" data-panel="photos">
+      <div class="panel-head">
+        <h2>Progress Photos</h2>
+      </div>
+      <p class="panel-note">Photos Peyton takes in the studio appear here, and you can add your own between visits. Take them in the same light each time for the clearest comparison.</p>
+      <form id="clientPhotoForm" class="upload-drop">
+        <label for="clientPhotoFile">Add a photo of your skin today</label>
+        <input type="file" id="clientPhotoFile" accept="image/*" required>
+        <div class="field-inline mt-16">
+          <div class="field"><label for="clientPhotoDate">Date taken</label><input type="date" id="clientPhotoDate"></div>
+          <div class="field"><label for="clientPhotoCaption">Note <span style="opacity:.6;">(optional)</span></label><input type="text" id="clientPhotoCaption" maxlength="240" placeholder="e.g. Week 4, morning"></div>
+        </div>
+        <button type="submit" class="btn btn-solid btn-sm">Upload Photo</button>
+      </form>
+      <div class="photo-grid mt-24" id="photoGrid"></div>
+    </div>
+
+    <!-- Appointments -->
+    <div class="panel hidden" data-panel="appointments">
+      <div class="panel-head">
+        <h2>Appointment History</h2>
+        <a href="https://glowbyp.glossgenius.com/" target="_blank" rel="noopener" class="btn btn-solid btn-sm">Book Again</a>
+      </div>
+      <p class="panel-note">Every visit Peyton logs after your treatment, with the notes from your session. New bookings are made on GlossGenius.</p>
+      <div id="appointmentList"></div>
+    </div>
+
+    <!-- Orders -->
+    <div class="panel hidden" data-panel="orders">
+      <div class="panel-head">
+        <h2>Skincare Orders</h2>
+        <a href="shop.html" class="btn btn-solid btn-sm">Shop Skincare</a>
+      </div>
+      <p class="panel-note">Orders placed through the shop while signed in, plus anything you picked up in the studio.</p>
+      <div id="orderList"></div>
+    </div>
+
+    <!-- Profile -->
+    <div class="panel hidden" data-panel="profile">
+      <div class="panel-head">
+        <h2>My Details</h2>
+      </div>
+      <form id="profileForm">
+        <div class="field-inline">
+          <div class="field"><label for="profileName">Full name</label><input type="text" id="profileName" maxlength="120"></div>
+          <div class="field"><label for="profilePhone">Phone</label><input type="tel" id="profilePhone" maxlength="40"></div>
+          <div class="field"><label for="profileSkinType">Skin type</label><input type="text" id="profileSkinType" maxlength="80" placeholder="e.g. Combination, acne-prone"></div>
+        </div>
+        <div class="field">
+          <label for="profileConcerns">What you'd like to work on</label>
+          <textarea id="profileConcerns" rows="4" maxlength="600" placeholder="Congestion along the jaw, dullness, puffiness…"></textarea>
+        </div>
+        <button type="submit" class="btn btn-solid btn-sm">Save Details</button>
+      </form>
+
+      <div class="panel-head mt-40"><h3>Password</h3></div>
+      <form id="passwordForm">
+        <div class="field" style="max-width:340px;">
+          <label for="newPassword">New password <span style="opacity:.6;">(8+ characters)</span></label>
+          <input type="password" id="newPassword" autocomplete="new-password" minlength="8">
+        </div>
+        <button type="submit" class="btn btn-line btn-sm">Update Password</button>
+      </form>
+      <p class="panel-note mt-24" id="profileEmail"></p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="index.html" class="logo">Glow <em>by</em> P</a>
+        <p>Holistic Esthetics &middot; Lymphatic Focus &middot; Acne Specialist &middot; Organic Products</p>
+      </div>
+      <div class="footer-cols">
+        <div class="footer-col">
+          <h4>Explore</h4>
+          <a href="about.html">About Me</a>
+          <a href="services.html">Services</a>
+          <a href="shop.html">Shop</a>
+          <a href="reviews.html">Reviews</a>
+        </div>
+        <div class="footer-col">
+          <h4>Connect</h4>
+          <a href="https://www.instagram.com/glow_by_p" target="_blank" rel="noopener">Instagram</a>
+          <a href="contact.html">Email</a>
+          <a href="portal.html">Client Portal</a>
+        </div>
+        <div class="footer-col">
+          <h4>Coming Soon</h4>
+          <span>Skin Journal</span>
+          <span>Resources</span>
+          <span>FAQ</span>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Glow by P. All rights reserved.</span>
+      <span>Content is educational and not intended to diagnose, treat, cure, or prevent any condition.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+<script src="portal-lib.js"></script>
+<script src="portal.js"></script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+{
+  "name": "glow-by-p",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Glow by P — holistic esthetics studio site, client portal and admin portal",
+  "scripts": {
+    "db:generate": "drizzle-kit generate",
+    "typecheck": "tsc -p tsconfig.check.json"
+  },
+  "dependencies": {
+    "@netlify/blobs": "^9.0.0",
+    "@netlify/database": "^1.0.0",
+    "@netlify/functions": "^4.0.0",
+    "@netlify/identity": "^1.0.0",
+    "drizzle-orm": "beta"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.1",
+    "drizzle-kit": "beta",
+    "typescript": "5.7"
+  }
+}

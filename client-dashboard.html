@@ -108,3 +108,10 @@ fetch('/.netlify/functions/client-my-journey')
 
 document.getElementById('logoutBtn').addEventListener('click', function () {
   fetch('/.netlify/functions/client-logout', { method: 'POST' }).then(function () {
+    window.location.href = 'client-portal.html';
+  });
+});
+</script>
+
+</body>
+</html>

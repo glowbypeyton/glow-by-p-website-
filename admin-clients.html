@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clients — Admin — Glow by P</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .client-row{ background:var(--sage-tint); border:1px solid var(--line-soft); border-radius:18px; padding:20px 24px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; }
+  .client-meta{ font-size:0.8rem; opacity:0.6; margin-top:4px; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="nav-inner" style="justify-content:space-between;">
+    <a href="index.html" class="logo-link"><img src="images/glow-by-p-logo.png" alt="Glow by P" class="logo-img"></a>
+    <div style="display:flex; gap:14px; align-items:center;">
+      <a href="admin-dashboard.html" class="btn btn-line btn-sm">Inbox</a>
+      <button id="logoutBtn" class="btn btn-line btn-sm">Log Out</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="section" style="padding-top: clamp(48px,7vw,90px);">
+    <div class="wrap" style="max-width:800px;">
+      <span class="eyebrow">Admin</span>
+      <h1 class="h-xl mt-16">Clients</h1>
+      <p class="lede mt-16">Pick a client to view or update their routine, notes, and progress photos.</p>
+
+      <div id="loadingState" class="mt-40" style="opacity:0.6;">Loading…</div>
+      <div id="clientsList" class="mt-40"></div>
+    </div>
+  </section>
+</main>
+
+<script>
+function escapeHtml(str) {
+  var div = document.createElement('div');
+  div.textContent = str == null ? '' : String(str);
+  return div.innerHTML;
+}
+
+fetch('/.netlify/functions/admin-get-clients')
+  .then(function (res) {
+    if (res.status === 401) { window.location.href = 'admin-login.html'; return null; }
+    return res.json();
+  })
+  .then(function (data) {
+    if (!data) return;
+    document.getElementById('loadingState').style.display = 'none';
+    var list = document.getElementById('clientsList');
+    if (!data.clients.length) {
+      list.innerHTML = '<p style="opacity:0.6;">No clients have signed up yet.</p>';
+      return;
+    }
+    list.innerHTML = data.clients.map(function (c) {
+      return '' +
+        '<div class="client-row">' +
+          '<div>' +
+            '<h3 class="h-md">' + escapeHtml(c.full_name) + '</h3>' +
+            '<div class="client-meta">' + escapeHtml(c.email) + (c.phone ? ' &middot; ' + escapeHtml(c.phone) : '') + '</div>' +
+          '</div>' +
+          '<a href="admin-client-detail.html?id=' + c.id + '" class="btn btn-solid btn-sm">Manage</a>' +
+        '</div>';
+    }).join('');
+  })
+  .catch(function () {
+    document.getElementById('loadingState').textContent = 'Could not load clients. Please refresh.';
+  });
+
+document.getElementById('logoutBtn').addEventListener('click', function () {
+  fetch('/.netlify/functions/admin-logout', { method: 'POST' }).then(function () {
+    window.location.href = 'admin-login.html';
+  });
+});
+</script>
+
+</body>
+</html>

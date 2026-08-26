@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manage Client — Admin — Glow by P</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .dash-section{ background:var(--sage-tint); border:1px solid var(--line-soft); border-radius:22px; padding:32px; margin-bottom:24px; }
+  .note-row{ border-bottom:1px solid var(--line-soft); padding:16px 0; }
+  .note-row:last-child{ border-bottom:none; }
+  .note-meta{ font-size:0.72rem; opacity:0.55; margin-bottom:6px; }
+  .note-photo{ max-width:220px; border-radius:12px; margin-top:10px; display:block; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="nav-inner" style="justify-content:space-between;">
+    <a href="index.html" class="logo-link"><img src="images/glow-by-p-logo.png" alt="Glow by P" class="logo-img"></a>
+    <div style="display:flex; gap:14px; align-items:center;">
+      <a href="admin-clients.html" class="btn btn-line btn-sm">← All Clients</a>
+      <button id="logoutBtn" class="btn btn-line btn-sm">Log Out</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="section" style="padding-top: clamp(48px,7vw,90px);">
+    <div class="wrap" style="max-width:760px;">
+      <span class="eyebrow">Admin</span>
+      <h1 class="h-xl mt-16" id="clientName">Loading…</h1>
+      <p class="lede mt-16" id="clientEmail"></p>
+
+      <div class="mt-40">
+
+        <div class="dash-section">
+          <h2 class="h-md">Routine</h2>
+          <div class="field mt-24">
+            <label for="amRoutine">AM Routine</label>
+            <textarea id="amRoutine" rows="4" placeholder="e.g. Cleanser, Vitamin C serum, Moisturizer, SPF"></textarea>
+          </div>
+          <div class="field">
+            <label for="pmRoutine">PM Routine</label>
+            <textarea id="pmRoutine" rows="4" placeholder="e.g. Oil cleanse, Cleanser, Retinol, Moisturizer"></textarea>
+          </div>
+          <button class="btn btn-solid" id="saveRoutineBtn">Save Routine</button>
+          <p id="routineMsg" style="font-size:0.85rem; color:var(--forest); margin-top:14px;"></p>
+        </div>
+
+        <div class="dash-section">
+          <h2 class="h-md">Add a Visit Note</h2>
+          <div class="field mt-24">
+            <label for="noteText">Note</label>
+            <textarea id="noteText" rows="3" placeholder="How their skin looked, what was done, next steps…"></textarea>
+          </div>
+          <div class="field">
+            <label for="notePhoto">Progress Photo Link (optional)</label>
+            <input id="notePhoto" type="url" placeholder="Paste a photo URL">
+          </div>
+          <button class="btn btn-solid" id="addNoteBtn">Add Note</button>
+          <p id="noteMsg" style="font-size:0.85rem; color:var(--forest); margin-top:14px;"></p>
+        </div>
+
+        <div class="dash-section">
+          <h2 class="h-md">History</h2>
+          <div id="notesList" class="mt-16">Loading…</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+function escapeHtml(str) {
+  var div = document.createElement('div');
+  div.textContent = str == null ? '' : String(str);
+  return div.innerHTML;
+}
+function formatDate(iso) {
+  try { return new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }); }
+  catch (e) { return iso; }
+}
+
+var params = new URLSearchParams(window.location.search);
+var clientId = params.get('id');
+
+if (!clientId) {
+  document.getElementById('clientName').textContent = 'No client selected';
+} else {
+  loadClient();
+}
+
+function loadClient() {
+  fetch('/.netlify/functions/admin-client-detail?id=' + encodeURIComponent(clientId))
+    .then(function (res) {
+      if (res.status === 401) { window.location.href = 'admin-login.html'; return null; }
+      return res.json().then(function (data) { return { ok: res.ok, data: data }; });
+    })
+    .then(function (result) {
+      if (!result) return;
+      if (!result.ok) {
+        document.getElementById('clientName').textContent = 'Client not found';
+        return;
+      }
+      var client = result.data.client;
+      document.getElementById('clientName').textContent = client.full_name;
+      document.getElementById('clientEmail').textContent = client.email + (client.phone ? ' · ' + client.phone : '');
+      document.getElementById('amRoutine').value = client.am_routine || '';
+      document.getElementById('pmRoutine').value = client.pm_routine || '';
+      renderNotes(result.data.notes);
+    });
+}
+
+function renderNotes(notes) {
+  var list = document.getElementById('notesList');
+  if (!notes.length) {
+    list.innerHTML = '<p style="opacity:0.6;">No visit notes yet.</p>';
+    return;
+  }
+  list.innerHTML = notes.map(function (n) {
+    return '' +
+      '<div class="note-row">' +
+        '<div class="note-meta">' + formatDate(n.created_at) + '</div>' +
+        (n.note ? '<p>' + escapeHtml(n.note) + '</p>' : '') +
+        (n.photo_url ? '<img class="note-photo" src="' + escapeHtml(n.photo_url) + '" alt="Progress photo">' : '') +
+      '</div>';
+  }).join('');
+}
+
+document.getElementById('saveRoutineBtn').addEventListener('click', function () {
+  var btn = this;
+  var msg = document.getElementById('routineMsg');
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+
+  fetch('/.netlify/functions/admin-client-detail', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      action: 'updateRoutine',
+      clientId: clientId,
+      amRoutine: document.getElementById('amRoutine').value,
+      pmRoutine: document.getElementById('pmRoutine').value
+    })
+  })
+    .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
+    .then(function (result) {
+      btn.disabled = false;
+      btn.textContent = 'Save Routine';
+      msg.textContent = result.ok ? 'Routine saved.' : ((result.data && result.data.error) || 'Something went wrong.');
+    })
+    .catch(function () {
+      btn.disabled = false;
+      btn.textContent = 'Save Routine';
+      msg.textContent = 'Could not reach the server.';
+    });
+});
+
+document.getElementById('addNoteBtn').addEventListener('click', function () {
+  var btn = this;
+  var msg = document.getElementById('noteMsg');
+  var noteEl = document.getElementById('noteText');
+  var photoEl = document.getElementById('notePhoto');
+  btn.disabled = true;
+  btn.textContent = 'Adding…';
+
+  fetch('/.netlify/functions/admin-client-detail', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      action: 'addNote',
+      clientId: clientId,
+      note: noteEl.value,
+      photoUrl: photoEl.value
+    })
+  })
+    .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
+    .then(function (result) {
+      btn.disabled = false;
+      btn.textContent = 'Add Note';
+      if (result.ok) {
+        noteEl.value = '';
+        photoEl.value = '';
+        msg.textContent = 'Note added.';
+        loadClient();
+      } else {
+        msg.textContent = (result.data && result.data.error) || 'Something went wrong.';
+      }
+    })
+    .catch(function () {
+      btn.disabled = false;
+      btn.textContent = 'Add Note';
+      msg.textContent = 'Could not reach the server.';
+    });
+});
+
+document.getElementById('logoutBtn').addEventListener('click', function () {
+  fetch('/.netlify/functions/admin-logout', { method: 'POST' }).then(function () {
+    window.location.href = 'admin-login.html';
+  });
+});
+</script>
+
+</body>
+</html>

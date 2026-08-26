@@ -10,6 +10,8 @@
 const { getDatabase } = require('@netlify/database');
 
 exports.handler = async function (event) {
+  console.log('submit-contact invoked. method:', event.httpMethod, 'body:', event.body);
+
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method not allowed' };
   }
@@ -39,6 +41,7 @@ exports.handler = async function (event) {
     `;
     return { statusCode: 200, body: JSON.stringify({ ok: true }) };
   } catch (err) {
+    console.log('submit-contact error:', err && err.message, err && err.stack);
     return { statusCode: 500, body: JSON.stringify({ error: 'Could not save your message. Please try again.' }) };
   }
 };

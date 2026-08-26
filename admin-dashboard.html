@@ -30,7 +30,7 @@
 </header>
 
 <main>
-  <section class="section" style="padding-top: clamp(48px,7vw,90px);">
+  <section class="section bg-cream" style="padding-top: clamp(48px,7vw,90px); padding-bottom:20px;">
     <div class="wrap" style="max-width:900px;">
       <span class="eyebrow">Admin Dashboard</span>
       <h1 class="h-xl mt-16">Your Inbox</h1>
@@ -40,7 +40,11 @@
         <button class="dash-tab active" data-tab="contacts">Contact Messages <span id="unreadBadge"></span></button>
         <button class="dash-tab" data-tab="newsletter">Newsletter Signups</button>
       </div>
+    </div>
+  </section>
 
+  <section class="section bg-olive-mist" style="padding-top:20px;">
+    <div class="wrap" style="max-width:900px;">
       <div id="loadingState" style="opacity:0.6;">Loading…</div>
 
       <div id="contactsPanel" style="display:none;"></div>

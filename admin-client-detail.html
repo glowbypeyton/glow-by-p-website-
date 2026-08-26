@@ -27,48 +27,50 @@
 </header>
 
 <main>
-  <section class="section" style="padding-top: clamp(48px,7vw,90px);">
+  <section class="section bg-cream" style="padding-top: clamp(48px,7vw,90px); padding-bottom:20px;">
     <div class="wrap" style="max-width:760px;">
       <span class="eyebrow">Admin</span>
       <h1 class="h-xl mt-16" id="clientName">Loading…</h1>
       <p class="lede mt-16" id="clientEmail"></p>
+    </div>
+  </section>
 
-      <div class="mt-40">
+  <section class="section bg-olive-mist" style="padding-top:20px;">
+    <div class="wrap" style="max-width:760px;">
 
-        <div class="dash-section">
-          <h2 class="h-md">Routine</h2>
-          <div class="field mt-24">
-            <label for="amRoutine">AM Routine</label>
-            <textarea id="amRoutine" rows="4" placeholder="e.g. Cleanser, Vitamin C serum, Moisturizer, SPF"></textarea>
-          </div>
-          <div class="field">
-            <label for="pmRoutine">PM Routine</label>
-            <textarea id="pmRoutine" rows="4" placeholder="e.g. Oil cleanse, Cleanser, Retinol, Moisturizer"></textarea>
-          </div>
-          <button class="btn btn-solid" id="saveRoutineBtn">Save Routine</button>
-          <p id="routineMsg" style="font-size:0.85rem; color:var(--forest); margin-top:14px;"></p>
+      <div class="dash-section">
+        <h2 class="h-md">Routine</h2>
+        <div class="field mt-24">
+          <label for="amRoutine">AM Routine</label>
+          <textarea id="amRoutine" rows="4" placeholder="e.g. Cleanser, Vitamin C serum, Moisturizer, SPF"></textarea>
         </div>
-
-        <div class="dash-section">
-          <h2 class="h-md">Add a Visit Note</h2>
-          <div class="field mt-24">
-            <label for="noteText">Note</label>
-            <textarea id="noteText" rows="3" placeholder="How their skin looked, what was done, next steps…"></textarea>
-          </div>
-          <div class="field">
-            <label for="notePhoto">Progress Photo Link (optional)</label>
-            <input id="notePhoto" type="url" placeholder="Paste a photo URL">
-          </div>
-          <button class="btn btn-solid" id="addNoteBtn">Add Note</button>
-          <p id="noteMsg" style="font-size:0.85rem; color:var(--forest); margin-top:14px;"></p>
+        <div class="field">
+          <label for="pmRoutine">PM Routine</label>
+          <textarea id="pmRoutine" rows="4" placeholder="e.g. Oil cleanse, Cleanser, Retinol, Moisturizer"></textarea>
         </div>
-
-        <div class="dash-section">
-          <h2 class="h-md">History</h2>
-          <div id="notesList" class="mt-16">Loading…</div>
-        </div>
-
+        <button class="btn btn-solid" id="saveRoutineBtn">Save Routine</button>
+        <p id="routineMsg" style="font-size:0.85rem; color:var(--forest); margin-top:14px;"></p>
       </div>
+
+      <div class="dash-section">
+        <h2 class="h-md">Add a Visit Note</h2>
+        <div class="field mt-24">
+          <label for="noteText">Note</label>
+          <textarea id="noteText" rows="3" placeholder="How their skin looked, what was done, next steps…"></textarea>
+        </div>
+        <div class="field">
+          <label for="notePhoto">Progress Photo Link (optional)</label>
+          <input id="notePhoto" type="url" placeholder="Paste a photo URL">
+        </div>
+        <button class="btn btn-solid" id="addNoteBtn">Add Note</button>
+        <p id="noteMsg" style="font-size:0.85rem; color:var(--forest); margin-top:14px;"></p>
+      </div>
+
+      <div class="dash-section" style="margin-bottom:0;">
+        <h2 class="h-md">History</h2>
+        <div id="notesList" class="mt-16">Loading…</div>
+      </div>
+
     </div>
   </section>
 </main>

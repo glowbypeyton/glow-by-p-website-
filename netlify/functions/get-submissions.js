@@ -16,7 +16,7 @@ exports.handler = async function (event) {
     return { statusCode: 401, body: JSON.stringify({ error: 'Not signed in.' }) };
   }
 
-  const db = getDatabase();
+  const db = getDatabase({ connectionString: process.env.DATABASE_CONNECTION_STRING });
 
   if (event.httpMethod === 'GET') {
     try {

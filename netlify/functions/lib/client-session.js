@@ -1,56 +1,63 @@
 /**
- * client-login.js
+ * client-session.js
  * ---------------------------------------------------------------
- * Signs an existing client in.
+ * Signed-cookie sessions for logged-in clients — same pattern as
+ * the admin session, but tracks which client is logged in and
+ * uses its own secret (CLIENT_SESSION_SECRET) so client and admin
+ * sessions can never be mixed up or forged as each other.
  * ------------------------------------------------------------- */
 
-const { getDatabase } = require('@netlify/database');
-const { verifyPassword } = require('./lib/password');
-const { createClientSessionCookie } = require('./lib/client-session');
+const crypto = require('crypto');
 
-exports.handler = async function (event) {
-  if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method not allowed' };
-  }
+const COOKIE_NAME = 'client_session';
+const SESSION_LENGTH_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 
-  let data;
+function sign(payloadB64) {
+  const secret = process.env.CLIENT_SESSION_SECRET || '';
+  return crypto.createHmac('sha256', secret).update(payloadB64).digest('base64url');
+}
+
+function createClientSessionCookie(client) {
+  const payload = { clientId: client.id, email: client.email, exp: Date.now() + SESSION_LENGTH_MS };
+  const payloadB64 = Buffer.from(JSON.stringify(payload)).toString('base64url');
+  const signature = sign(payloadB64);
+  const token = payloadB64 + '.' + signature;
+  const maxAge = Math.floor(SESSION_LENGTH_MS / 1000);
+  return COOKIE_NAME + '=' + token + '; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=' + maxAge;
+}
+
+function clearClientSessionCookie() {
+  return COOKIE_NAME + '=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0';
+}
+
+function getClientSession(event) {
+  const cookieHeader = (event.headers && (event.headers.cookie || event.headers.Cookie)) || '';
+  const match = cookieHeader.match(new RegExp('(?:^|; )' + COOKIE_NAME + '=([^;]+)'));
+  if (!match) return null;
+
+  const token = decodeURIComponent(match[1]);
+  const parts = token.split('.');
+  if (parts.length !== 2) return null;
+
+  const [payloadB64, signature] = parts;
+  const expectedSignature = sign(payloadB64);
+
   try {
-    data = JSON.parse(event.body);
+    const sigBuf = Buffer.from(signature);
+    const expectedBuf = Buffer.from(expectedSignature);
+    if (sigBuf.length !== expectedBuf.length) return null;
+    if (!crypto.timingSafeEqual(sigBuf, expectedBuf)) return null;
   } catch (e) {
-    return { statusCode: 400, body: JSON.stringify({ error: 'Invalid request.' }) };
-  }
-
-  const email = (data.email || '').trim().toLowerCase();
-  const password = data.password || '';
-
-  if (!email || !password) {
-    return { statusCode: 400, body: JSON.stringify({ error: 'Email and password are required.' }) };
+    return null;
   }
 
   try {
-    const db = getDatabase({ connectionString: process.env.DATABASE_CONNECTION_STRING });
-    const rows = await db.sql`
-      SELECT id, email, full_name, password_hash, password_salt
-      FROM clients WHERE email = ${email}
-    `;
-
-    if (rows.length === 0) {
-      return { statusCode: 401, body: JSON.stringify({ error: 'Incorrect email or password.' }) };
-    }
-
-    const client = rows[0];
-    const valid = verifyPassword(password, client.password_hash, client.password_salt);
-    if (!valid) {
-      return { statusCode: 401, body: JSON.stringify({ error: 'Incorrect email or password.' }) };
-    }
-
-    return {
-      statusCode: 200,
-      headers: { 'Set-Cookie': createClientSessionCookie(client) },
-      body: JSON.stringify({ ok: true, fullName: client.full_name })
-    };
-  } catch (err) {
-    console.log('client-login error:', err && err.message, err && err.stack);
-    return { statusCode: 500, body: JSON.stringify({ error: 'Could not sign you in. Please try again.' }) };
+    const payload = JSON.parse(Buffer.from(payloadB64, 'base64url').toString('utf8'));
+    if (!payload.clientId || !payload.exp || Date.now() > payload.exp) return null;
+    return payload;
+  } catch (e) {
+    return null;
   }
-};
+}
+
+module.exports = { createClientSessionCookie, clearClientSessionCookie, getClientSession };

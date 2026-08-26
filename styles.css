@@ -2,8 +2,8 @@
    GLOW BY P — Design System v3 — "Earthen Tranquility"
    Palette (only 4 colors used sitewide):
      Warm Ivory  #EAE3D3 — main background, light text/cards
-     Olive Mist  #A6AC8A — lighter green accent section
-     Sage Advice #727763 — darker green accent section
+     Olive Mist  #969C7C — lighter green accent section
+     Sage Advice #666B4E — darker green accent section
      Deep Taupe  #635340 — buttons, headings, dark text
    Display:  "Fraunces"  (editorial serif)
    Body:     "Work Sans" (clean sans)
@@ -15,8 +15,8 @@
   /* Every token below resolves to one of the 4 palette colors above,
      kept as separate names only so the existing component rules
      (buttons, cards, sections) don't need to be rewritten one by one. */
-  --sage:       #A6AC8A; /* Olive Mist — lighter green */
-  --olive:      #727763; /* Sage Advice — darker green, used for accent text/icons */
+  --sage:       #969C7C; /* Olive Mist — lighter green */
+  --olive:      #666B4E; /* Sage Advice — darker green, used for accent text/icons */
   --cream:      #EAE3D3; /* Warm Ivory — main page background */
   --ivory:      #EAE3D3; /* Warm Ivory — light text/card surfaces */
   --beige:      #EAE3D3; /* Warm Ivory — light text on dark sections */
@@ -25,10 +25,10 @@
   --black:      #635340; /* Deep Taupe — body text */
 
   --sage-tint:  #EAE3D3; /* card surfaces stay Warm Ivory regardless of section */
-  --forest:     #727763; /* Sage Advice — darker green, solid CTA sections */
+  --forest:     #666B4E; /* Sage Advice — darker green, solid CTA sections */
   --forest-dark:#635340; /* Deep Taupe — hover for forest buttons */
   --walnut:     #635340; /* Deep Taupe — solid buttons */
-  --walnut-dark:#727763; /* Sage Advice — hover for solid buttons */
+  --walnut-dark:#666B4E; /* Sage Advice — hover for solid buttons */
   --line:       rgba(99,83,64,0.18);
   --line-soft:  rgba(99,83,64,0.10);
 

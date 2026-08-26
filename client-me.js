@@ -1,14 +1,31 @@
--- Phase 2: Client accounts (signup/login)
--- Netlify applies this automatically on deploy.
+/**
+ * client-me.js
+ * ---------------------------------------------------------------
+ * Confirms who's logged in and returns their basic info. The
+ * dashboard calls this on load — a 401 means "not logged in,
+ * redirect to client-portal.html."
+ * ------------------------------------------------------------- */
 
-CREATE TABLE IF NOT EXISTS clients (
-  id SERIAL PRIMARY KEY,
-  full_name TEXT NOT NULL,
-  email TEXT NOT NULL UNIQUE,
-  phone TEXT,
-  password_hash TEXT NOT NULL,
-  password_salt TEXT NOT NULL,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
-);
+const { getDatabase } = require('@netlify/database');
+const { getClientSession } = require('./lib/client-session');
 
-CREATE INDEX IF NOT EXISTS idx_clients_email ON clients (email);
+exports.handler = async function (event) {
+  const session = getClientSession(event);
+  if (!session) {
+    return { statusCode: 401, body: JSON.stringify({ error: 'Not signed in.' }) };
+  }
+
+  try {
+    const db = getDatabase({ connectionString: process.env.DATABASE_CONNECTION_STRING });
+    const rows = await db.sql`
+      SELECT id, full_name, email, phone, created_at FROM clients WHERE id = ${session.clientId}
+    `;
+    if (rows.length === 0) {
+      return { statusCode: 401, body: JSON.stringify({ error: 'Account not found.' }) };
+    }
+    return { statusCode: 200, body: JSON.stringify({ client: rows[0] }) };
+  } catch (err) {
+    console.log('client-me error:', err && err.message, err && err.stack);
+    return { statusCode: 500, body: JSON.stringify({ error: 'Could not load your account.' }) };
+  }
+};

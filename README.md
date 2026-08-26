@@ -48,6 +48,55 @@ Cart, Reviews, Contact, and Book Now — plus a 404 page. No build step required
   Duplicate it per product, or generate these pages dynamically once
   connected to a real commerce platform.
 
+## Admin Dashboard (Phase 1 of the client/admin portal project)
+
+This is the first piece of a bigger project: a private admin dashboard
+where you can see everything submitted through your Contact form and
+Glow Note newsletter signup — both of which previously just showed a
+"success" message and went nowhere. Now they're saved to a real
+database and you can read them at `/admin-dashboard.html`.
+
+**How to log in:** go to `yoursite.netlify.app/admin-login.html`. This
+page isn't linked anywhere in the public navigation — it's meant to
+stay private, reachable only if you know the URL. Bookmark it.
+
+**One-time setup — add 3 new environment variables in Netlify:**
+
+Site configuration → Environment variables → Add a variable, same as
+you did for Square. Add all three, scoped to Builds/Functions/Runtime
+like before:
+
+| Key | Value |
+|---|---|
+| `ADMIN_EMAIL` | Whatever email you want to log in with (doesn't need to be a real inbox — just your login username) |
+| `ADMIN_PASSWORD` | A password of your choice for logging into the dashboard |
+| `ADMIN_SESSION_SECRET` | `9fd1681af3ba615f68962cdeb081cf7d8dade7db77e299ba50c6c021d210f67e` (a random value I generated for you — paste it in exactly as-is, you'll never need to type or remember this one) |
+
+After adding all three, redeploy (Trigger deploy → Clear cache and
+deploy site) so the login function picks them up — same as we did
+troubleshooting Square.
+
+**What's new in this update:**
+- `netlify/database/migrations/0001_contact_and_newsletter.sql` — sets
+  up the database tables. Netlify applies this automatically on
+  deploy, no action needed from you.
+- `package.json` — lists the database package as a dependency so
+  Netlify installs it during the build.
+- `netlify/functions/admin-login.js`, `admin-logout.js`,
+  `get-submissions.js`, `submit-contact.js`, `submit-newsletter.js`,
+  and `netlify/functions/lib/admin-session.js` — the backend.
+- `admin-login.html`, `admin-dashboard.html` — the two new pages.
+- The Contact page and homepage newsletter form now actually save to
+  the database instead of just showing a fake success message.
+- The homepage tagline now includes "Acne Specialist," and there's a
+  new "Your Weekly Glow Note" signup section above the final call to
+  action.
+
+**What's next:** this is only Phase 1 of the full client/admin portal
+project we scoped out — client accounts, routines, progress photos,
+order history, and reviews with photos are still to come in later
+phases.
+
 ## Connecting Square checkout (combined cart)
 
 Checkout is powered by a small serverless function

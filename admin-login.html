@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login — Glow by P</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="nav-inner" style="justify-content:space-between;">
+    <a href="index.html" class="logo-link"><img src="images/glow-by-p-logo.png" alt="Glow by P" class="logo-img"></a>
+    <a href="index.html" style="font-size:0.76rem; letter-spacing:0.11em; text-transform:uppercase; font-weight:500; opacity:0.75;">Back to Site</a>
+  </div>
+</header>
+
+<main>
+  <section class="section" style="padding-top: clamp(64px,10vw,120px);">
+    <div class="wrap center mx-auto" style="max-width:420px;">
+      <span class="eyebrow">Admin</span>
+      <h1 class="h-xl mt-16">Sign In</h1>
+      <p class="lede mx-auto mt-16">This area is just for Peyton.</p>
+
+      <form id="loginForm" novalidate style="text-align:left; margin-top:36px;">
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" required autocomplete="username">
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn btn-solid btn-full" id="loginBtn">Sign In</button>
+        <p id="loginError" style="color:#A24B3F; font-size:0.85rem; margin-top:14px; display:none;"></p>
+      </form>
+    </div>
+  </section>
+</main>
+
+<script>
+document.getElementById('loginForm').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var btn = document.getElementById('loginBtn');
+  var errorEl = document.getElementById('loginError');
+  errorEl.style.display = 'none';
+  btn.disabled = true;
+  btn.textContent = 'Signing in…';
+
+  fetch('/.netlify/functions/admin-login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      email: document.getElementById('email').value,
+      password: document.getElementById('password').value
+    })
+  })
+    .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
+    .then(function (result) {
+      if (result.ok) {
+        window.location.href = 'admin-dashboard.html';
+      } else {
+        errorEl.textContent = (result.data && result.data.error) || 'Something went wrong.';
+        errorEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Sign In';
+      }
+    })
+    .catch(function () {
+      errorEl.textContent = 'Could not reach the server. Please try again.';
+      errorEl.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Sign In';
+    });
+});
+</script>
+
+</body>
+</html>

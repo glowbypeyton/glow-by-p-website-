@@ -1,0 +1,9 @@
+{
+  "name": "glow-by-p-website",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Glow by P website, functions, and database migrations.",
+  "dependencies": {
+    "@netlify/database": "^1.0.0"
+  }
+}

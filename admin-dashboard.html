@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard — Glow by P</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .dash-tabs{ display:flex; gap:10px; margin-bottom:32px; }
+  .dash-tab{ font-size:0.72rem; letter-spacing:0.1em; text-transform:uppercase; font-weight:600; padding:10px 20px; border:1px solid var(--line); border-radius:999px; color:var(--espresso); opacity:0.7; }
+  .dash-tab.active{ background:var(--forest); border-color:var(--forest); color:var(--ivory); opacity:1; }
+  .submission-row{ background:var(--sage-tint); border:1px solid var(--line-soft); border-radius:18px; padding:20px 24px; margin-bottom:14px; }
+  .submission-row.unread{ border-left:4px solid var(--forest); }
+  .submission-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap; }
+  .submission-meta{ font-size:0.72rem; opacity:0.55; letter-spacing:0.04em; }
+  .empty-state{ opacity:0.6; padding:40px 0; text-align:center; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="nav-inner" style="justify-content:space-between;">
+    <a href="index.html" class="logo-link"><img src="images/glow-by-p-logo.png" alt="Glow by P" class="logo-img"></a>
+    <button id="logoutBtn" class="btn btn-line btn-sm">Log Out</button>
+  </div>
+</header>
+
+<main>
+  <section class="section" style="padding-top: clamp(48px,7vw,90px);">
+    <div class="wrap" style="max-width:900px;">
+      <span class="eyebrow">Admin Dashboard</span>
+      <h1 class="h-xl mt-16">Your Inbox</h1>
+      <p class="lede mt-16">Contact form messages and newsletter signups from your website.</p>
+
+      <div class="dash-tabs mt-40">
+        <button class="dash-tab active" data-tab="contacts">Contact Messages <span id="unreadBadge"></span></button>
+        <button class="dash-tab" data-tab="newsletter">Newsletter Signups</button>
+      </div>
+
+      <div id="loadingState" style="opacity:0.6;">Loading…</div>
+
+      <div id="contactsPanel" style="display:none;"></div>
+      <div id="newsletterPanel" style="display:none;"></div>
+    </div>
+  </section>
+</main>
+
+<script>
+function escapeHtml(str) {
+  var div = document.createElement('div');
+  div.textContent = str == null ? '' : String(str);
+  return div.innerHTML;
+}
+function formatDate(iso) {
+  try {
+    return new Date(iso).toLocaleString(undefined, { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
+  } catch (e) { return iso; }
+}
+
+function renderContacts(contacts) {
+  var panel = document.getElementById('contactsPanel');
+  if (!contacts.length) {
+    panel.innerHTML = '<p class="empty-state">No messages yet.</p>';
+    return;
+  }
+  panel.innerHTML = contacts.map(function (c) {
+    return '' +
+      '<div class="submission-row' + (c.is_read ? '' : ' unread') + '" data-id="' + c.id + '">' +
+        '<div class="submission-top">' +
+          '<div>' +
+            '<h3 class="h-md">' + escapeHtml(c.name) + '</h3>' +
+            '<div class="submission-meta mt-8">' + escapeHtml(c.email) + (c.phone ? ' &middot; ' + escapeHtml(c.phone) : '') + '</div>' +
+            (c.service_interest ? '<div class="submission-meta mt-8">Interested in: ' + escapeHtml(c.service_interest) + '</div>' : '') +
+          '</div>' +
+          '<div class="submission-meta">' + formatDate(c.created_at) + '</div>' +
+        '</div>' +
+        (c.message ? '<p class="mt-16" style="opacity:0.85;">' + escapeHtml(c.message) + '</p>' : '') +
+        (c.is_read ? '' : '<button class="btn btn-line btn-sm mt-16 mark-read-btn">Mark as Read</button>') +
+      '</div>';
+  }).join('');
+
+  panel.querySelectorAll('.mark-read-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var row = btn.closest('.submission-row');
+      var id = row.getAttribute('data-id');
+      fetch('/.netlify/functions/get-submissions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'markRead', id: id })
+      }).then(function () { loadSubmissions(); });
+    });
+  });
+}
+
+function renderNewsletter(list) {
+  var panel = document.getElementById('newsletterPanel');
+  if (!list.length) {
+    panel.innerHTML = '<p class="empty-state">No signups yet.</p>';
+    return;
+  }
+  panel.innerHTML = list.map(function (n) {
+    return '' +
+      '<div class="submission-row">' +
+        '<div class="submission-top">' +
+          '<div>' +
+            '<h3 class="h-md">' + escapeHtml(n.first_name || '(no name)') + '</h3>' +
+            '<div class="submission-meta mt-8">' + escapeHtml(n.email) + '</div>' +
+          '</div>' +
+          '<div class="submission-meta">' + formatDate(n.created_at) + '</div>' +
+        '</div>' +
+      '</div>';
+  }).join('');
+}
+
+function loadSubmissions() {
+  fetch('/.netlify/functions/get-submissions')
+    .then(function (res) {
+      if (res.status === 401) {
+        window.location.href = 'admin-login.html';
+        return null;
+      }
+      return res.json();
+    })
+    .then(function (data) {
+      if (!data) return;
+      document.getElementById('loadingState').style.display = 'none';
+      document.getElementById('contactsPanel').style.display = 'block';
+      renderContacts(data.contacts);
+      renderNewsletter(data.newsletter);
+
+      var unread = data.contacts.filter(function (c) { return !c.is_read; }).length;
+      var badge = document.getElementById('unreadBadge');
+      badge.textContent = unread > 0 ? '(' + unread + ')' : '';
+    })
+    .catch(function () {
+      document.getElementById('loadingState').textContent = 'Could not load your inbox. Please refresh.';
+    });
+}
+
+document.querySelectorAll('.dash-tab').forEach(function (tab) {
+  tab.addEventListener('click', function () {
+    document.querySelectorAll('.dash-tab').forEach(function (t) { t.classList.remove('active'); });
+    tab.classList.add('active');
+    var target = tab.getAttribute('data-tab');
+    document.getElementById('contactsPanel').style.display = target === 'contacts' ? 'block' : 'none';
+    document.getElementById('newsletterPanel').style.display = target === 'newsletter' ? 'block' : 'none';
+  });
+});
+
+document.getElementById('logoutBtn').addEventListener('click', function () {
+  fetch('/.netlify/functions/admin-logout', { method: 'POST' }).then(function () {
+    window.location.href = 'admin-login.html';
+  });
+});
+
+loadSubmissions();
+</script>
+
+</body>
+</html>

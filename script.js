@@ -79,7 +79,84 @@ document.addEventListener('DOMContentLoaded', function () {
       });
   }
 
-  /* ---------------- Newsletter / contact / booking forms (demo only) ---------------- */
+  /* ---------------- Newsletter signup (real, saves to database) ---------------- */
+  var newsletterForm = document.getElementById('newsletterForm');
+  if (newsletterForm) {
+    newsletterForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var btn = document.getElementById('newsletterBtn');
+      var msg = document.getElementById('newsletterMsg');
+      var firstName = document.getElementById('nFirstName').value.trim();
+      var email = document.getElementById('nEmail').value.trim();
+      btn.disabled = true;
+      btn.textContent = 'Sending…';
+
+      fetch('/.netlify/functions/submit-newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ firstName: firstName, email: email })
+      })
+        .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
+        .then(function (result) {
+          btn.disabled = false;
+          btn.textContent = 'Send Me the Glow Note';
+          if (result.ok) {
+            newsletterForm.reset();
+            msg.textContent = (firstName ? firstName + ', y' : 'Y') + "ou're on the list — welcome to the Glow Note.";
+          } else {
+            msg.textContent = (result.data && result.data.error) || 'Something went wrong. Please try again.';
+          }
+        })
+        .catch(function () {
+          btn.disabled = false;
+          btn.textContent = 'Send Me the Glow Note';
+          msg.textContent = 'Could not reach the server. Please try again.';
+        });
+    });
+  }
+
+  /* ---------------- Contact form (real, saves to database) ---------------- */
+  var contactForm = document.getElementById('contactForm');
+  if (contactForm) {
+    contactForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var btn = document.getElementById('contactBtn');
+      var msg = document.getElementById('contactMsg');
+      var payload = {
+        name: document.getElementById('cname').value.trim(),
+        email: document.getElementById('cemail').value.trim(),
+        phone: document.getElementById('cphone').value.trim(),
+        service: document.getElementById('cservice').value,
+        message: document.getElementById('cmessage').value.trim()
+      };
+      btn.disabled = true;
+      btn.textContent = 'Sending…';
+
+      fetch('/.netlify/functions/submit-contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+        .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
+        .then(function (result) {
+          btn.disabled = false;
+          btn.textContent = 'Send Message';
+          if (result.ok) {
+            contactForm.reset();
+            msg.textContent = 'Thank you — your message has been sent. Peyton will reply within 1–2 business days.';
+          } else {
+            msg.textContent = (result.data && result.data.error) || 'Something went wrong. Please try again.';
+          }
+        })
+        .catch(function () {
+          btn.disabled = false;
+          btn.textContent = 'Send Message';
+          msg.textContent = 'Could not reach the server. Please try again.';
+        });
+    });
+  }
+
+  /* ---------------- Booking-page demo forms (FAQ page etc, unchanged) ---------------- */
   document.querySelectorAll('[data-demo-form]').forEach(function (form) {
     form.addEventListener('submit', function (e) {
       e.preventDefault();

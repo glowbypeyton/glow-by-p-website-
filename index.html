@@ -36,10 +36,10 @@
 
   <!-- HERO: studio photo with wordmark -->
   <section class="hero-photo">
-    <div class="hero-photo-label">Studio photo placeholder — replace with your real studio photography</div>
+    <img src="images/studio-hero.jpg" alt="Glow by P treatment room" class="hero-photo-img">
     <div class="hero-content reveal in">
       <h1 class="h-display">GLOW BY P</h1>
-      <p class="hero-tagline">Holistic Esthetics &middot; Lymph Focus &middot; Organic Products</p>
+      <p class="hero-tagline">Holistic Esthetics &middot; Lymphatic Focus &middot; Acne Specialist &middot; Organic Products</p>
       <div class="btn-row">
         <a href="https://glowbyp.glossgenius.com/" target="_blank" rel="noopener" class="btn btn-solid">Book Now</a>
       </div>
@@ -50,7 +50,7 @@
   <section class="section bg-cream">
     <div class="wrap grid-2">
       <div class="reveal">
-        <div class="ph ph-portrait"><span class="ph-label">Photo placeholder — Peyton headshot</span></div>
+        <div class="ph ph-portrait"><img src="images/peyton-headshot.jpg" alt="Peyton, esthetician at Glow by P" class="ph-photo"></div>
       </div>
       <div class="reveal">
         <span class="eyebrow">Welcome to Glow by P</span>
@@ -268,6 +268,31 @@
     </div>
   </section>
 
+  <!-- NEWSLETTER SIGNUP -->
+  <section class="section bg-cream">
+    <div class="wrap grid-2">
+      <div class="reveal">
+        <span class="eyebrow">Stay Close</span>
+        <h2 class="h-xl mt-16">Your Weekly Glow Note</h2>
+        <p class="mt-16" style="opacity:0.8; max-width:44ch;">Simple skin education, holistic wellness tips, and things I'm loving&mdash;sent straight to your inbox.</p>
+      </div>
+      <div class="reveal">
+        <form id="newsletterForm" novalidate style="background:var(--sage-tint); border:1px solid var(--line-soft); padding:34px; border-radius:22px;">
+          <div class="field">
+            <label for="nFirstName">First Name</label>
+            <input id="nFirstName" name="firstName" type="text" placeholder="Your first name">
+          </div>
+          <div class="field">
+            <label for="nEmail">Email</label>
+            <input id="nEmail" name="email" type="email" placeholder="you@email.com" required>
+          </div>
+          <button type="submit" class="btn btn-solid btn-full" id="newsletterBtn">Send Me the Glow Note</button>
+          <p id="newsletterMsg" style="font-size:0.85rem; color:var(--forest); margin-top:14px;"></p>
+        </form>
+      </div>
+    </div>
+  </section>
+
   <!-- FINAL CTA -->
   <section class="section bg-sage center">
     <div class="wrap reveal">
@@ -287,7 +312,7 @@
     <div class="footer-top">
       <div class="footer-brand">
         <a href="index.html" class="logo">Glow <em>by</em> P</a>
-        <p>Holistic Esthetics &middot; Lymph Focus &middot; Organic Products</p>
+        <p>Holistic Esthetics &middot; Lymphatic Focus &middot; Acne Specialist &middot; Organic Products</p>
       </div>
       <div class="footer-cols">
         <div class="footer-col">

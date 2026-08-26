@@ -34,7 +34,7 @@ exports.handler = async function (event) {
   }
 
   try {
-    const db = getDatabase();
+    const db = getDatabase({ connectionString: process.env.DATABASE_CONNECTION_STRING });
     await db.sql`
       INSERT INTO contact_submissions (name, email, phone, service_interest, message)
       VALUES (${name}, ${email}, ${phone}, ${service}, ${message})

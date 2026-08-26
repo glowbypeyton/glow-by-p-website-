@@ -1,135 +1,62 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>About Me — Glow by P</title>
-<meta name="description" content="Meet Peyton, the holistic esthetician behind Glow by P.">
-<link rel="stylesheet" href="styles.css">
-</head>
-<body>
+/**
+ * client-signup.js
+ * ---------------------------------------------------------------
+ * Creates a new client account. Passwords are hashed (never
+ * stored in plain text) using Node's built-in scrypt.
+ * ------------------------------------------------------------- */
 
-<header class="site-header">
-  <div class="nav-inner">
-    <a href="index.html" class="logo-link"><img src="images/glow-by-p-logo.png" alt="Glow by P — Holistic Esthetician" class="logo-img"></a>
-    <nav class="nav-links" id="navLinks">
-      <a href="index.html">Home</a>
-      <a href="about.html" aria-current="page">About Me</a>
-      <a href="services.html">Services</a>
-      <a href="shop.html">Shop</a>
-      <a href="reviews.html">Reviews</a>
-      <a href="contact.html">Contact</a>
-    </nav>
-    <div class="nav-right">
-      <a href="cart.html" class="cart-link" aria-label="View cart">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.4"><path d="M6 8h12l-1.2 11a2 2 0 0 1-2 1.8H9.2a2 2 0 0 1-2-1.8L6 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
-        <span class="cart-count" data-cart-count>0</span>
-      </a>
-      <a href="https://glowbyp.glossgenius.com/" target="_blank" rel="noopener" class="nav-book">Book Now</a>
-    </div>
-    <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false"><span></span><span></span><span></span></button>
-  </div>
-</header>
-<div class="nav-scrim"></div>
+const { getDatabase } = require('@netlify/database');
+const { hashPassword } = require('./lib/password');
+const { createClientSessionCookie } = require('./lib/client-session');
 
-<main>
+exports.handler = async function (event) {
+  if (event.httpMethod !== 'POST') {
+    return { statusCode: 405, body: 'Method not allowed' };
+  }
 
-  <section class="section" style="padding-top: clamp(48px,8vw,90px); padding-bottom:36px;">
-    <div class="wrap grid-2">
-      <div class="reveal in">
-        <span class="eyebrow">Your Esthetician</span>
-        <h1 class="h-display mt-16">Hi, I'm Peyton</h1>
-        <svg class="stroke-divider" viewBox="0 0 88 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <path d="M2 24C17 5 33 4 44 15C55 26 71 24 86 6"/>
-          <path d="M44 15C44 15 48 7 55 9C55 9 51 17 44 15Z" fill="currentColor" stroke="none" opacity="0.85"/>
-        </svg>
-      </div>
-      <div class="reveal">
-        <div class="ph ph-portrait"><img src="images/peyton-headshot.jpg" alt="Peyton, esthetician at Glow by P" class="ph-photo"></div>
-      </div>
-    </div>
-  </section>
+  let data;
+  try {
+    data = JSON.parse(event.body);
+  } catch (e) {
+    return { statusCode: 400, body: JSON.stringify({ error: 'Invalid request.' }) };
+  }
 
-  <section class="section bg-cream" style="padding-top:0;">
-    <div class="wrap" style="max-width:760px;">
-      <p class="lede reveal" style="max-width:none;">I'm the esthetician behind Glow by P, and I'm passionate about holistic skincare&mdash;the kind that looks at your skin as part of the whole picture, not just something to fix. I believe skincare should be personalized, which is why I love taking the time to really understand your skin, your habits, and what will actually work for your life.</p>
-      <p class="mt-24 reveal" style="opacity:0.85;">I focus on natural, intentional treatments and I care a lot about using non-toxic products&mdash;both in the studio and in what I recommend for home. More than anything, I want every client to leave feeling comfortable, cared for, and confident in their own skin.</p>
-    </div>
-  </section>
+  const fullName = (data.fullName || '').trim();
+  const email = (data.email || '').trim().toLowerCase();
+  const phone = (data.phone || '').trim();
+  const password = data.password || '';
 
-  <section class="section bg-olive-mist">
-    <div class="wrap grid-2">
-      <div class="reveal">
-        <div class="ph ph-tall"><img src="images/studio-treatment-room.jpg" alt="Glow by P treatment room" class="ph-photo"></div>
-      </div>
-      <div class="reveal">
-        <span class="eyebrow">My Approach</span>
-        <h2 class="h-lg mt-16">Skin, beyond the surface.</h2>
-        <p class="mt-16" style="opacity:0.85;max-width:46ch;">At Glow by P, I look at skin beyond just surface-level concerns. Everyday habits&mdash;stress, sleep, hydration, your skincare routine, and lifestyle in general&mdash;can all affect the way your skin looks and feels. My goal is to help you understand those connections so we can build a routine and treatment plan that actually makes sense for you.</p>
-        <div class="btn-row">
-          <a href="https://glowbyp.glossgenius.com/" target="_blank" rel="noopener" class="btn btn-solid">Book With Me</a>
-        </div>
-      </div>
-    </div>
-  </section>
+  if (!fullName || !email || !password) {
+    return { statusCode: 400, body: JSON.stringify({ error: 'Name, email, and password are required.' }) };
+  }
+  if (password.length < 8) {
+    return { statusCode: 400, body: JSON.stringify({ error: 'Password must be at least 8 characters.' }) };
+  }
 
-  <section class="section bg-sage">
-    <div class="wrap">
-      <div class="grid-3 reveal">
-        <div>
-          <h3 class="h-md">Personalized Care</h3>
-          <p class="mt-8" style="opacity:0.85;">Every treatment plan starts with understanding your unique skin.</p>
-        </div>
-        <div>
-          <h3 class="h-md">Natural &amp; Non-Toxic</h3>
-          <p class="mt-8" style="opacity:0.85;">Thoughtfully chosen products, in the studio and at home.</p>
-        </div>
-        <div>
-          <h3 class="h-md">Comfort First</h3>
-          <p class="mt-8" style="opacity:0.85;">A space where you can feel at ease and confident in your skin.</p>
-        </div>
-      </div>
-    </div>
-  </section>
+  const { hash, salt } = hashPassword(password);
 
-</main>
+  try {
+    const db = getDatabase({ connectionString: process.env.DATABASE_CONNECTION_STRING });
 
-<footer class="site-footer">
-  <div class="wrap">
-    <div class="footer-top">
-      <div class="footer-brand">
-        <a href="index.html" class="logo">Glow <em>by</em> P</a>
-        <p>Holistic Esthetics &middot; Lymphatic Focus &middot; Acne Specialist &middot; Organic Products</p>
-      </div>
-      <div class="footer-cols">
-        <div class="footer-col">
-          <h4>Explore</h4>
-          <a href="about.html">About Me</a>
-          <a href="services.html">Services</a>
-          <a href="shop.html">Shop</a>
-          <a href="reviews.html">Reviews</a>
-        </div>
-        <div class="footer-col">
-          <h4>Connect</h4>
-          <a href="https://www.instagram.com/glow_by_p" target="_blank" rel="noopener">Instagram</a>
-          <a href="contact.html">Email</a>
-          <a href="book.html">Book Now</a>
-        </div>
-        <div class="footer-col">
-          <h4>Coming Soon</h4>
-          <span>Skin Journal</span>
-          <span>Resources</span>
-          <span>FAQ</span>
-        </div>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <span>&copy; 2026 Glow by P. All rights reserved.</span>
-      <span>Content is educational and not intended to diagnose, treat, cure, or prevent any condition.</span>
-    </div>
-  </div>
-</footer>
+    const existing = await db.sql`SELECT id FROM clients WHERE email = ${email}`;
+    if (existing.length > 0) {
+      return { statusCode: 409, body: JSON.stringify({ error: 'An account with that email already exists. Try signing in instead.' }) };
+    }
 
-<script src="script.js"></script>
-</body>
-</html>
+    const inserted = await db.sql`
+      INSERT INTO clients (full_name, email, phone, password_hash, password_salt)
+      VALUES (${fullName}, ${email}, ${phone}, ${hash}, ${salt})
+      RETURNING id, email, full_name
+    `;
+    const client = inserted[0];
+
+    return {
+      statusCode: 200,
+      headers: { 'Set-Cookie': createClientSessionCookie(client) },
+      body: JSON.stringify({ ok: true, fullName: client.full_name })
+    };
+  } catch (err) {
+    console.log('client-signup error:', err && err.message, err && err.stack);
+    return { statusCode: 500, body: JSON.stringify({ error: 'Could not create your account. Please try again.' }) };
+  }
+};

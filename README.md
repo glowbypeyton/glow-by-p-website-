@@ -97,6 +97,56 @@ project we scoped out — client accounts, routines, progress photos,
 order history, and reviews with photos are still to come in later
 phases.
 
+## Client Portal (Phase 2 of the client/admin portal project)
+
+Clients can now create a real account (with a securely hashed password —
+never stored in plain text) and sign in at `client-portal.html`, reachable
+from "Client Portal" in the main navigation on every page.
+
+Once signed in, they land on `client-dashboard.html`, which currently shows
+three empty sections — **Your Routine**, **Progress Photos**, and **Order
+History** — each marked "coming soon." These get filled in during Phase 3
+(you'll be able to add a client's routine, progress photos, and visit notes
+from your admin dashboard) and Phase 4 (Square purchases will show up here
+automatically).
+
+**One-time setup — add 1 new environment variable in Netlify:**
+
+Site configuration → Environment variables → Add a variable, scoped to
+Builds/Functions/Runtime like the others:
+
+| Key | Value |
+|---|---|
+| `CLIENT_SESSION_SECRET` | `75bb972d9e14816c21dbdde1b9b29dd088e7708ea03067191f7c3e2774f3205c` (a random value I generated for you — paste it in exactly as-is) |
+
+This is separate from `ADMIN_SESSION_SECRET` on purpose — it keeps client
+logins and your admin login cryptographically independent, so one can
+never be used to fake the other.
+
+After adding it, redeploy (Trigger deploy → Clear cache and deploy site,
+or push to GitHub and let it redeploy automatically) so the new functions
+pick it up.
+
+**What's new in this update:**
+- `netlify/database/migrations/0002_clients.sql` — adds the `clients`
+  table. Applies automatically on deploy.
+- `netlify/functions/client-signup.js`, `client-login.js`,
+  `client-logout.js`, `client-me.js` — the backend.
+- `netlify/functions/lib/password.js` — password hashing (uses Node's
+  built-in `crypto`, no extra dependency).
+- `netlify/functions/lib/client-session.js` — signed-cookie sessions for
+  clients, separate from the admin session system.
+- `client-portal.html`, `client-dashboard.html` — the two new pages.
+- "Client Portal" added to the navigation on every page.
+
+**A note on the database connection:** every function that talks to the
+database (`client-signup.js`, `client-login.js`, `client-me.js`, and all
+of Phase 1's functions) explicitly passes `connectionString:
+process.env.DATABASE_CONNECTION_STRING`. This was the fix we landed on
+after troubleshooting Phase 1 — if you ever add a new function that
+needs the database, copy that same pattern rather than calling
+`getDatabase()` with no arguments.
+
 ## Connecting Square checkout (combined cart)
 
 Checkout is powered by a small serverless function

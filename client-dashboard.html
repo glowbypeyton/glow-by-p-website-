@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Skin Journey — Glow by P</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .dash-section{ background:var(--sage-tint); border:1px solid var(--line-soft); border-radius:22px; padding:32px; margin-bottom:24px; }
+  .coming-soon{ opacity:0.6; padding:24px 0; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="nav-inner" style="justify-content:space-between;">
+    <a href="index.html" class="logo-link"><img src="images/glow-by-p-logo.png" alt="Glow by P" class="logo-img"></a>
+    <button id="logoutBtn" class="btn btn-line btn-sm">Log Out</button>
+  </div>
+</header>
+
+<main>
+  <section class="section" style="padding-top: clamp(48px,7vw,90px);">
+    <div class="wrap" style="max-width:760px;">
+      <span class="eyebrow">Client Portal</span>
+      <h1 class="h-xl mt-16" id="welcomeHeading">Welcome back</h1>
+      <p class="lede mt-16">Your routine, progress photos, and order history, all in one place.</p>
+
+      <div class="mt-40">
+        <div class="dash-section">
+          <h2 class="h-md">Your Routine</h2>
+          <p class="coming-soon">Your AM and PM routine will show up here once Peyton sets it up for you after your first visit.</p>
+        </div>
+
+        <div class="dash-section">
+          <h2 class="h-md">Progress Photos</h2>
+          <p class="coming-soon">Progress photos from your treatments will appear here over time.</p>
+        </div>
+
+        <div class="dash-section">
+          <h2 class="h-md">Order History</h2>
+          <p class="coming-soon">Skincare orders you place through the site will show up here.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+fetch('/.netlify/functions/client-me')
+  .then(function (res) {
+    if (res.status === 401) {
+      window.location.href = 'client-portal.html';
+      return null;
+    }
+    return res.json();
+  })
+  .then(function (data) {
+    if (!data) return;
+    var firstName = (data.client.full_name || '').split(' ')[0];
+    document.getElementById('welcomeHeading').textContent = 'Welcome back' + (firstName ? ', ' + firstName : '');
+  })
+  .catch(function () {
+    window.location.href = 'client-portal.html';
+  });
+
+document.getElementById('logoutBtn').addEventListener('click', function () {
+  fetch('/.netlify/functions/client-logout', { method: 'POST' }).then(function () {
+    window.location.href = 'client-portal.html';
+  });
+});
+</script>
+
+</body>
+</html>

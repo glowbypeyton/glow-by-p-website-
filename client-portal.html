@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Client Portal — Glow by P</title>
+<meta name="description" content="Sign in or create your Glow by P client account.">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .auth-tabs{ display:flex; background:var(--beige); border-radius:999px; padding:4px; margin-bottom:28px; }
+  .auth-tab{ flex:1; text-align:center; padding:12px; border-radius:999px; font-size:0.76rem; letter-spacing:0.1em; text-transform:uppercase; font-weight:600; color:var(--espresso); opacity:0.6; }
+  .auth-tab.active{ background:var(--ivory); opacity:1; }
+  .auth-panel{ display:none; }
+  .auth-panel.active{ display:block; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="nav-inner" style="justify-content:space-between;">
+    <a href="index.html" class="logo-link"><img src="images/glow-by-p-logo.png" alt="Glow by P" class="logo-img"></a>
+    <a href="index.html" style="font-size:0.76rem; letter-spacing:0.11em; text-transform:uppercase; font-weight:500; opacity:0.75;">Back to Site</a>
+  </div>
+</header>
+
+<main>
+  <section class="section" style="padding-top: clamp(56px,8vw,100px);">
+    <div class="wrap center mx-auto" style="max-width:440px;">
+      <span class="eyebrow">Client Portal</span>
+      <h1 class="h-xl mt-16">Your Skin Journey</h1>
+      <p class="lede mx-auto mt-16">Sign in to see your routine, progress photos, and order history.</p>
+
+      <div style="text-align:left; margin-top:36px; background:var(--sage-tint); border:1px solid var(--line-soft); border-radius:22px; padding:32px;">
+
+        <div class="auth-tabs">
+          <button type="button" class="auth-tab active" data-tab="signin">Sign In</button>
+          <button type="button" class="auth-tab" data-tab="signup">Create Account</button>
+        </div>
+
+        <!-- SIGN IN -->
+        <form id="signinForm" class="auth-panel active" novalidate>
+          <div class="field">
+            <label for="siEmail">Email</label>
+            <input id="siEmail" type="email" required autocomplete="username">
+          </div>
+          <div class="field">
+            <label for="siPassword">Password</label>
+            <input id="siPassword" type="password" required autocomplete="current-password">
+          </div>
+          <button type="submit" class="btn btn-solid btn-full" id="signinBtn">Sign In</button>
+          <p id="signinMsg" style="color:#A24B3F; font-size:0.85rem; margin-top:14px; display:none;"></p>
+        </form>
+
+        <!-- CREATE ACCOUNT -->
+        <form id="signupForm" class="auth-panel" novalidate>
+          <div class="field">
+            <label for="suName">Full Name</label>
+            <input id="suName" type="text" required autocomplete="name">
+          </div>
+          <div class="field">
+            <label for="suEmail">Email</label>
+            <input id="suEmail" type="email" required autocomplete="username">
+          </div>
+          <div class="field">
+            <label for="suPhone">Phone (optional)</label>
+            <input id="suPhone" type="tel" autocomplete="tel">
+          </div>
+          <div class="field">
+            <label for="suPassword">Password (8+ characters)</label>
+            <input id="suPassword" type="password" required autocomplete="new-password" minlength="8">
+          </div>
+          <button type="submit" class="btn btn-solid btn-full" id="signupBtn">Create My Account</button>
+          <p id="signupMsg" style="color:#A24B3F; font-size:0.85rem; margin-top:14px; display:none;"></p>
+        </form>
+
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+document.querySelectorAll('.auth-tab').forEach(function (tab) {
+  tab.addEventListener('click', function () {
+    document.querySelectorAll('.auth-tab').forEach(function (t) { t.classList.remove('active'); });
+    document.querySelectorAll('.auth-panel').forEach(function (p) { p.classList.remove('active'); });
+    tab.classList.add('active');
+    document.getElementById(tab.getAttribute('data-tab') + 'Form').classList.add('active');
+  });
+});
+
+document.getElementById('signinForm').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var btn = document.getElementById('signinBtn');
+  var msg = document.getElementById('signinMsg');
+  msg.style.display = 'none';
+  btn.disabled = true;
+  btn.textContent = 'Signing in…';
+
+  fetch('/.netlify/functions/client-login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      email: document.getElementById('siEmail').value,
+      password: document.getElementById('siPassword').value
+    })
+  })
+    .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
+    .then(function (result) {
+      if (result.ok) {
+        window.location.href = 'client-dashboard.html';
+      } else {
+        msg.textContent = (result.data && result.data.error) || 'Something went wrong.';
+        msg.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Sign In';
+      }
+    })
+    .catch(function () {
+      msg.textContent = 'Could not reach the server. Please try again.';
+      msg.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Sign In';
+    });
+});
+
+document.getElementById('signupForm').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var btn = document.getElementById('signupBtn');
+  var msg = document.getElementById('signupMsg');
+  msg.style.display = 'none';
+  btn.disabled = true;
+  btn.textContent = 'Creating account…';
+
+  fetch('/.netlify/functions/client-signup', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      fullName: document.getElementById('suName').value,
+      email: document.getElementById('suEmail').value,
+      phone: document.getElementById('suPhone').value,
+      password: document.getElementById('suPassword').value
+    })
+  })
+    .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
+    .then(function (result) {
+      if (result.ok) {
+        window.location.href = 'client-dashboard.html';
+      } else {
+        msg.textContent = (result.data && result.data.error) || 'Something went wrong.';
+        msg.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Create My Account';
+      }
+    })
+    .catch(function () {
+      msg.textContent = 'Could not reach the server. Please try again.';
+      msg.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Create My Account';
+    });
+});
+</script>
+
+</body>
+</html>

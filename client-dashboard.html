@@ -30,12 +30,12 @@
       <div class="mt-40">
         <div class="dash-section">
           <h2 class="h-md">Your Routine</h2>
-          <p class="coming-soon">Your AM and PM routine will show up here once Peyton sets it up for you after your first visit.</p>
+          <div id="routineContent" class="mt-16" style="opacity:0.6;">Loading…</div>
         </div>
 
         <div class="dash-section">
-          <h2 class="h-md">Progress Photos</h2>
-          <p class="coming-soon">Progress photos from your treatments will appear here over time.</p>
+          <h2 class="h-md">Progress &amp; Notes</h2>
+          <div id="notesContent" class="mt-16" style="opacity:0.6;">Loading…</div>
         </div>
 
         <div class="dash-section">
@@ -48,6 +48,16 @@
 </main>
 
 <script>
+function escapeHtml(str) {
+  var div = document.createElement('div');
+  div.textContent = str == null ? '' : String(str);
+  return div.innerHTML;
+}
+function formatDate(iso) {
+  try { return new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }); }
+  catch (e) { return iso; }
+}
+
 fetch('/.netlify/functions/client-me')
   .then(function (res) {
     if (res.status === 401) {
@@ -65,12 +75,36 @@ fetch('/.netlify/functions/client-me')
     window.location.href = 'client-portal.html';
   });
 
+fetch('/.netlify/functions/client-my-journey')
+  .then(function (res) { return res.json(); })
+  .then(function (data) {
+    var routineEl = document.getElementById('routineContent');
+    if (!data.amRoutine && !data.pmRoutine) {
+      routineEl.innerHTML = '<p style="opacity:0.7;">Your AM and PM routine will show up here once Peyton sets it up for you after your first visit.</p>';
+    } else {
+      routineEl.innerHTML =
+        (data.amRoutine ? '<p><strong>AM:</strong> ' + escapeHtml(data.amRoutine).replace(/\n/g, '<br>') + '</p>' : '') +
+        (data.pmRoutine ? '<p class="mt-16"><strong>PM:</strong> ' + escapeHtml(data.pmRoutine).replace(/\n/g, '<br>') + '</p>' : '');
+    }
+
+    var notesEl = document.getElementById('notesContent');
+    if (!data.notes || !data.notes.length) {
+      notesEl.innerHTML = '<p style="opacity:0.7;">Notes and progress photos from your treatments will appear here over time.</p>';
+    } else {
+      notesEl.innerHTML = data.notes.map(function (n) {
+        return '' +
+          '<div style="border-bottom:1px solid var(--line-soft); padding:14px 0;">' +
+            '<div style="font-size:0.72rem; opacity:0.55; margin-bottom:6px;">' + formatDate(n.created_at) + '</div>' +
+            (n.note ? '<p>' + escapeHtml(n.note) + '</p>' : '') +
+            (n.photo_url ? '<img src="' + escapeHtml(n.photo_url) + '" alt="Progress photo" style="max-width:220px; border-radius:12px; margin-top:10px; display:block;">' : '') +
+          '</div>';
+      }).join('');
+    }
+  })
+  .catch(function () {
+    document.getElementById('routineContent').textContent = 'Could not load your routine.';
+    document.getElementById('notesContent').textContent = 'Could not load your history.';
+  });
+
 document.getElementById('logoutBtn').addEventListener('click', function () {
   fetch('/.netlify/functions/client-logout', { method: 'POST' }).then(function () {
-    window.location.href = 'client-portal.html';
-  });
-});
-</script>
-
-</body>
-</html>

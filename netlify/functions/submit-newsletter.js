@@ -28,7 +28,7 @@ exports.handler = async function (event) {
   }
 
   try {
-    const db = getDatabase();
+    const db = getDatabase({ connectionString: process.env.DATABASE_CONNECTION_STRING });
     await db.sql`
       INSERT INTO newsletter_signups (first_name, email)
       VALUES (${firstName}, ${email})
@@ -36,6 +36,7 @@ exports.handler = async function (event) {
     `;
     return { statusCode: 200, body: JSON.stringify({ ok: true }) };
   } catch (err) {
+    console.log('submit-newsletter error:', err && err.message, err && err.stack);
     return { statusCode: 500, body: JSON.stringify({ error: 'Could not sign you up. Please try again.' }) };
   }
 };

@@ -286,6 +286,9 @@ p{ font-weight:300; }
 .path-card-photo .path-card-bg{
   position:absolute; inset:0; background: linear-gradient(155deg, var(--cream) 0%, var(--sage) 55%, var(--taupe) 100%);
 }
+.path-card-photo .path-card-img{
+  position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center;
+}
 .path-card-photo::after{
   content:""; position:absolute; inset:0; z-index:1;
   background: linear-gradient(to top, rgba(99,83,64,0.88) 0%, rgba(99,83,64,0.3) 60%, rgba(99,83,64,0.05) 100%);

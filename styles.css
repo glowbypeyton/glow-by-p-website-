@@ -226,10 +226,18 @@ p{ font-weight:300; }
   position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center;
   transition: transform .5s ease;
 }
+.photo-tile-ph{
+  position:absolute; inset:0; background: linear-gradient(155deg, var(--cream) 0%, var(--sage) 55%, var(--taupe) 100%);
+  transition: transform .5s ease;
+}
+.photo-tile-ph-caption{
+  position:absolute; z-index:2; bottom:14px; left:16px; font-size:0.62rem; letter-spacing:0.07em;
+  text-transform:uppercase; color:var(--ivory); opacity:0.65; font-weight:500;
+}
 .photo-tile::after{
   content:""; position:absolute; inset:0; background: rgba(99,83,64,0.42); transition: background .35s ease; z-index:1;
 }
-.photo-tile:hover .photo-tile-img{ transform: scale(1.03); }
+.photo-tile:hover .photo-tile-img, .photo-tile:hover .photo-tile-ph{ transform: scale(1.03); }
 .photo-tile:hover::after{ background: rgba(99,83,64,0.55); }
 .photo-tile-label{
   position:relative; z-index:2; font-family:var(--serif); font-size:clamp(1rem,1.6vw,1.3rem);

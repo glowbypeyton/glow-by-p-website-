@@ -201,6 +201,21 @@ help setting that up.
   cart together, and the customer completes one payment covering all of
   it on Square's secure hosted page.
 
+**Every online order is pickup only.** `create-checkout.js` marks the
+order as an in-store Pickup fulfillment (`schedule_type: "ASAP"`), so
+Square's checkout page shows the customer your pickup location's
+address automatically, plus a short note ("Pickup at Glow by P —
+Holistic Haven, Murrieta, CA, 92563."). The prep time is set to 24
+hours before the order is marked ready — edit `prep_time_duration` in
+`create-checkout.js` (RFC 3339 duration format, e.g. `PT2H` for 2
+hours) if you want a different window.
+
+**Important:** the address Square shows is whatever is on file for
+the Location tied to your `SQUARE_LOCATION_ID` — double check that
+Location's address is set correctly in your Square dashboard
+(Locations → your location → Address), since this site doesn't
+control that value directly.
+
 ## Product Management (Phase 3 of the client/admin portal project)
 
 **This replaces the old "edit `data-stock` in the HTML by hand" workflow

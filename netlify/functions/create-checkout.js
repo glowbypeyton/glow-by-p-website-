@@ -77,7 +77,23 @@ exports.handler = async function (event) {
         idempotency_key: idempotencyKey,
         order: {
           location_id: locationId,
-          line_items: lineItems
+          line_items: lineItems,
+          // Marks every order as in-store pickup — Square's hosted
+          // checkout shows the pickup location's address (whatever is
+          // set on this Location in your Square dashboard) and this
+          // note to the customer. schedule_type "ASAP" means Square
+          // computes the ready time from prep_time_duration instead of
+          // asking the customer to pick a time slot.
+          fulfillments: [
+            {
+              type: 'PICKUP',
+              pickup_details: {
+                schedule_type: 'ASAP',
+                prep_time_duration: 'PT24H',
+                note: 'Pickup at Glow by P — Holistic Haven, Murrieta, CA, 92563.'
+              }
+            }
+          ]
         }
       })
     });

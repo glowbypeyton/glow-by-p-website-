@@ -89,7 +89,7 @@ exports.handler = async function (event) {
               type: 'PICKUP',
               pickup_details: {
                 schedule_type: 'ASAP',
-                prep_time_duration: 'PT24H',
+                prep_time_duration: 'PT2H',
                 note: 'Pickup at Glow by P — Holistic Haven, Murrieta, CA, 92563.'
               }
             }

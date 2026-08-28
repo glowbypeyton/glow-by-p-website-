@@ -226,18 +226,10 @@ p{ font-weight:300; }
   position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center;
   transition: transform .5s ease;
 }
-.photo-tile-ph{
-  position:absolute; inset:0; background: linear-gradient(155deg, var(--cream) 0%, var(--sage) 55%, var(--taupe) 100%);
-  transition: transform .5s ease;
-}
-.photo-tile-ph-caption{
-  position:absolute; z-index:2; bottom:14px; left:16px; font-size:0.62rem; letter-spacing:0.07em;
-  text-transform:uppercase; color:var(--ivory); opacity:0.65; font-weight:500;
-}
 .photo-tile::after{
   content:""; position:absolute; inset:0; background: rgba(99,83,64,0.42); transition: background .35s ease; z-index:1;
 }
-.photo-tile:hover .photo-tile-img, .photo-tile:hover .photo-tile-ph{ transform: scale(1.03); }
+.photo-tile:hover .photo-tile-img{ transform: scale(1.03); }
 .photo-tile:hover::after{ background: rgba(99,83,64,0.55); }
 .photo-tile-label{
   position:relative; z-index:2; font-family:var(--serif); font-size:clamp(1rem,1.6vw,1.3rem);
@@ -276,26 +268,18 @@ p{ font-weight:300; }
 
 .path-card{ background: var(--sage-tint); border:1px solid var(--line-soft); border-radius:22px; overflow:hidden; transition: transform .35s ease, box-shadow .35s ease; }
 .path-card:hover{ transform: translateY(-3px); box-shadow: 0 20px 40px rgba(99,83,64,0.1); }
-.path-card .ph{ min-height:200px; border-radius:0; border:none; }
 .path-card-body{ padding:26px 24px 28px; }
 .path-card-body h3{ margin-bottom:8px; }
 .path-card-body p{ opacity:0.78; margin-bottom:18px; font-size:0.94rem; }
 
 /* photo-overlay variant: text sits over the image, like .hero-photo */
 .path-card-photo{ position:relative; min-height:360px; display:flex; align-items:flex-end; }
-.path-card-photo .path-card-bg{
-  position:absolute; inset:0; background: linear-gradient(155deg, var(--cream) 0%, var(--sage) 55%, var(--taupe) 100%);
-}
 .path-card-photo .path-card-img{
   position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center;
 }
 .path-card-photo::after{
   content:""; position:absolute; inset:0; z-index:1;
   background: linear-gradient(to top, rgba(99,83,64,0.88) 0%, rgba(99,83,64,0.3) 60%, rgba(99,83,64,0.05) 100%);
-}
-.path-card-photo .path-card-ph-note{
-  position:absolute; z-index:2; top:14px; left:16px; font-size:0.62rem; letter-spacing:0.07em;
-  text-transform:uppercase; color:var(--ivory); opacity:0.65; font-weight:500;
 }
 .path-card-photo .path-card-body{ position:relative; z-index:2; color:var(--ivory); }
 .path-card-photo .path-card-body h3{ color:var(--ivory); }

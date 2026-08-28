@@ -17,7 +17,7 @@ exports.handler = async function (event) {
   try {
     const db = getDatabase({ connectionString: process.env.DATABASE_CONNECTION_STRING });
     const products = await db.sql`
-      SELECT slug, name, category, description, price, price_label, image_url, stock, display_order
+      SELECT slug, name, category, description, price, price_label, image_url, stock, display_order, featured
       FROM products
       ORDER BY category ASC, display_order ASC, name ASC
     `;

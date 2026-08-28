@@ -103,51 +103,8 @@
         <p class="lede mt-16">Running low on your routine? Easily reorder your Glow by P skincare favorites online.</p>
       </div>
 
-      <div class="grid-4 reveal">
-        <div class="product-card">
-          <div class="ph ph-product"><span class="ph-label">Product photo placeholder</span></div>
-          <div class="product-body">
-            <span class="product-name">Gentle Cream Cleanser</span>
-            <p class="product-desc">A soft, non-stripping daily cleanser.</p>
-            <span class="product-price">$32</span>
-            <div class="product-actions">
-              <button class="btn btn-line" data-add-to-cart data-product-id="cleanser-1" data-product-name="Gentle Cream Cleanser" data-product-price="32" data-stock="14">Add to Cart</button>
-            </div>
-          </div>
-        </div>
-        <div class="product-card">
-          <div class="ph ph-product"><span class="ph-label">Product photo placeholder</span></div>
-          <div class="product-body">
-            <span class="product-name">Balancing Facial Mist</span>
-            <p class="product-desc">A lightweight toner mist for everyday hydration.</p>
-            <span class="product-price">$26</span>
-            <div class="product-actions">
-              <button class="btn btn-line" data-add-to-cart data-product-id="mist-1" data-product-name="Balancing Facial Mist" data-product-price="26" data-stock="4">Add to Cart</button>
-            </div>
-          </div>
-        </div>
-        <div class="product-card">
-          <div class="ph ph-product"><span class="ph-label">Product photo placeholder</span></div>
-          <div class="product-body">
-            <span class="product-name">Nourishing Face Serum</span>
-            <p class="product-desc">A concentrated serum for daily support.</p>
-            <span class="product-price">$48</span>
-            <div class="product-actions">
-              <button class="btn btn-line" data-add-to-cart data-product-id="serum-1" data-product-name="Nourishing Face Serum" data-product-price="48" data-stock="0">Add to Cart</button>
-            </div>
-          </div>
-        </div>
-        <div class="product-card">
-          <div class="ph ph-product"><span class="ph-label">Product photo placeholder</span></div>
-          <div class="product-body">
-            <span class="product-name">Daily Mineral SPF</span>
-            <p class="product-desc">A lightweight, everyday mineral sunscreen.</p>
-            <span class="product-price">$38</span>
-            <div class="product-actions">
-              <button class="btn btn-line" data-add-to-cart data-product-id="spf-1" data-product-name="Daily Mineral SPF" data-product-price="38" data-stock="6">Add to Cart</button>
-            </div>
-          </div>
-        </div>
+      <div class="grid-4" id="homeShopGrid">
+        <p style="opacity:0.6;">Loading…</p>
       </div>
 
       <div class="btn-row center" style="justify-content:center;">
@@ -336,5 +293,61 @@
 </footer>
 
 <script src="script.js"></script>
+<script>
+(function () {
+  function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.textContent = str == null ? '' : String(str);
+    return div.innerHTML;
+  }
+
+  function productCardHtml(p) {
+    var priceText = p.price_label ? escapeHtml(p.price_label) : '$' + Number(p.price).toFixed(0);
+    var photo = p.image_url
+      ? '<img src="' + escapeHtml(p.image_url) + '" alt="" class="product-photo">'
+      : '<div class="ph ph-product"><span class="ph-label">Photo placeholder</span></div>';
+    return '' +
+      '<div class="product-card">' +
+        '<a href="product.html?id=' + encodeURIComponent(p.slug) + '">' + photo + '</a>' +
+        '<div class="product-body">' +
+          '<a href="product.html?id=' + encodeURIComponent(p.slug) + '"><span class="product-name">' + escapeHtml(p.name) + '</span></a>' +
+          '<p class="product-desc">' + escapeHtml(p.description) + '</p>' +
+          '<span class="product-price">' + priceText + '</span>' +
+          '<div class="product-actions">' +
+            '<button class="btn btn-line" data-add-to-cart data-product-id="' + escapeHtml(p.slug) + '" data-product-name="' + escapeHtml(p.name) + '" data-product-price="' + Number(p.price) + '" data-stock="' + Number(p.stock) + '">Add to Cart</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+  }
+
+  var grid = document.getElementById('homeShopGrid');
+  fetch('/.netlify/functions/get-products')
+    .then(function (res) { return res.json(); })
+    .then(function (data) {
+      var products = ((data && data.products) || []).filter(function (p) { return p.featured; }).slice(0, 4);
+      if (!products.length) {
+        grid.innerHTML = '<p style="opacity:0.6;">Check back soon — featured products coming shortly.</p>';
+        return;
+      }
+      grid.innerHTML = products.map(productCardHtml).join('');
+      if (window.GlowByPCart) { window.GlowByPCart.initCartUI(grid); }
+
+      grid.classList.add('reveal');
+      if ('IntersectionObserver' in window) {
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) { entry.target.classList.add('in'); io.unobserve(entry.target); }
+          });
+        }, { threshold: 0.14, rootMargin: '0px 0px -40px 0px' });
+        io.observe(grid);
+      } else {
+        grid.classList.add('in');
+      }
+    })
+    .catch(function () {
+      grid.innerHTML = '<p style="opacity:0.6;">Could not load products right now — visit the <a href="shop.html" style="border-bottom:1px solid currentColor;">shop page</a> instead.</p>';
+    });
+})();
+</script>
 </body>
 </html>

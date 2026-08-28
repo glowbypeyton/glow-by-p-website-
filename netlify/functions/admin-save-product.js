@@ -50,6 +50,7 @@ exports.handler = async function (event) {
   const imageUrl = String(data.imageUrl || '').trim();
   const stock = parseInt(data.stock, 10);
   const displayOrder = parseInt(data.displayOrder, 10) || 0;
+  const featured = !!data.featured;
   const originalSlug = data.originalSlug ? String(data.originalSlug).trim() : null;
 
   if (!name || !category || !slug) {
@@ -71,7 +72,7 @@ exports.handler = async function (event) {
           slug = ${slug}, name = ${name}, category = ${category},
           description = ${description}, price = ${price}, price_label = ${priceLabel},
           image_url = ${imageUrl}, stock = ${stock}, display_order = ${displayOrder},
-          updated_at = now()
+          featured = ${featured}, updated_at = now()
         WHERE slug = ${originalSlug}
         RETURNING slug
       `;
@@ -80,8 +81,8 @@ exports.handler = async function (event) {
       }
     } else {
       await db.sql`
-        INSERT INTO products (slug, name, category, description, price, price_label, image_url, stock, display_order)
-        VALUES (${slug}, ${name}, ${category}, ${description}, ${price}, ${priceLabel}, ${imageUrl}, ${stock}, ${displayOrder})
+        INSERT INTO products (slug, name, category, description, price, price_label, image_url, stock, display_order, featured)
+        VALUES (${slug}, ${name}, ${category}, ${description}, ${price}, ${priceLabel}, ${imageUrl}, ${stock}, ${displayOrder}, ${featured})
       `;
     }
     return { statusCode: 200, body: JSON.stringify({ ok: true, slug: slug }) };

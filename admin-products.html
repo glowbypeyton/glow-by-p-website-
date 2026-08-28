@@ -102,6 +102,10 @@
         <label for="pStock">Stock</label>
         <input id="pStock" type="number" min="0" required>
       </div>
+      <div class="field" style="display:flex; align-items:center; gap:10px;">
+        <input id="pFeatured" type="checkbox" style="width:auto;">
+        <label for="pFeatured" style="margin:0; text-transform:none; letter-spacing:normal; font-size:0.9rem; opacity:1;">Featured on homepage (Shop Your Skincare preview)</label>
+      </div>
       <p id="dialogMsg" style="font-size:0.85rem; color:#A24B3F; margin-bottom:14px; display:none;"></p>
       <div class="btn-row" style="justify-content:space-between; align-items:center;">
         <button type="button" id="deleteProductBtn" class="btn btn-line" style="display:none; border-color:#A24B3F; color:#A24B3F;">Delete Product</button>
@@ -199,7 +203,7 @@ function renderGroups() {
         '<div class="prod-row" data-slug="' + escapeHtml(p.slug) + '">' +
           thumb +
           '<div class="prod-info">' +
-            '<div class="prod-name">' + escapeHtml(p.name) + '</div>' +
+            '<div class="prod-name">' + escapeHtml(p.name) + (p.featured ? ' <span style="opacity:0.55; font-size:0.72rem;">&#9733; Featured</span>' : '') + '</div>' +
             '<div class="prod-meta">' + (p.price_label ? escapeHtml(p.price_label) : '$' + Number(p.price).toFixed(2)) + '</div>' +
           '</div>' +
           '<div class="prod-stock stock-flash">' +
@@ -261,6 +265,7 @@ function openDialog(product) {
   document.getElementById('pPriceLabel').value = product && product.price_label ? product.price_label : '';
   document.getElementById('pImageUrl').value = product ? product.image_url : '';
   document.getElementById('pStock').value = product ? product.stock : '';
+  document.getElementById('pFeatured').checked = !!(product && product.featured);
   document.getElementById('deleteProductBtn').style.display = product ? 'inline-flex' : 'none';
   dialog.showModal();
 }
@@ -282,7 +287,8 @@ function saveProduct(fields, originalSlug, callback) {
       priceLabel: fields.price_label || fields.priceLabel || null,
       imageUrl: fields.image_url || fields.imageUrl || '',
       stock: fields.stock,
-      displayOrder: fields.display_order != null ? fields.display_order : fields.displayOrder
+      displayOrder: fields.display_order != null ? fields.display_order : fields.displayOrder,
+      featured: !!fields.featured
     })
   })
     .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
@@ -307,7 +313,8 @@ document.getElementById('productForm').addEventListener('submit', function (e) {
     priceLabel: document.getElementById('pPriceLabel').value.trim() || null,
     imageUrl: document.getElementById('pImageUrl').value.trim(),
     stock: document.getElementById('pStock').value,
-    displayOrder: document.getElementById('pDisplayOrder').value
+    displayOrder: document.getElementById('pDisplayOrder').value,
+    featured: document.getElementById('pFeatured').checked
   };
   var originalSlug = document.getElementById('originalSlug').value || null;
 

@@ -201,41 +201,65 @@ help setting that up.
   cart together, and the customer completes one payment covering all of
   it on Square's secure hosted page.
 
-## Tracking product quantity (inventory)
+## Product Management (Phase 3 of the client/admin portal project)
 
-The shop pages now show live stock status ("Only 3 left" / "Sold Out")
-based on a number you set yourself — there's no backend or database yet,
-so this is a manual counter you keep updated by hand.
+**This replaces the old "edit `data-stock` in the HTML by hand" workflow
+below.** The shop now runs on a real `products` database table instead
+of hard-coded product cards — `shop.html` loads its entire product
+list live from the database on every page view, grouped and displayed
+by category automatically. Stock status ("Only 3 left" / "Sold Out")
+still works exactly the same way for customers, but the number behind
+it now lives in the database, not in the page source.
 
-**Where to edit it:** open `shop.html` (and `index.html`, `product.html`
-for the products featured there) and find the product's Add to Cart /
-Buy Now button. It looks like this:
+**Where to manage it:** go to `/admin-products.html` (linked from the
+Inbox and Clients admin pages, or bookmark it directly — same private,
+unlisted pattern as the rest of the admin section). From there you can:
+- Change any product's stock count inline — just edit the number, it
+  saves automatically when you click away.
+- Click **Edit** on any product to change its name, category, price,
+  description, or photo, or to delete it entirely.
+- Click **+ Add Product** to add a brand-new product. Paste a photo's
+  path (e.g. `images/products/example.jpg`, if you've added the file
+  to that folder) or a full image URL into the Photo field — there's
+  no upload button yet, so the image needs to already be reachable at
+  that path or URL.
+- Type a new value into the Category field (instead of picking an
+  existing one) to create a whole new shop category — it'll show up
+  on the shop page automatically, title-cased, with its own section.
 
-```html
-<button ... data-product-price="32" data-stock="14">Add to Cart</button>
-```
+No new environment variables to set up — this reuses the same
+`ADMIN_SESSION_SECRET` and `DATABASE_CONNECTION_STRING` already
+configured for the admin dashboard and client portal.
 
-Change the number in `data-stock="14"` to match how many you actually
-have. A few rules the site follows automatically:
-- **6 or more** → no note shown, button works normally
-- **1–5** → shows "Only X left" under the price
-- **0** → shows "Sold Out", greys out the product, and disables the button
+**What's new in this update:**
+- `netlify/database/migrations/0004_products.sql` — creates the
+  `products` table and seeds it with every product that was live on
+  the shop at the time of this update. Applies automatically on
+  deploy.
+- `netlify/functions/get-products.js` — public endpoint the shop page
+  fetches from; no login required, since this is the same information
+  customers already see on the page.
+- `netlify/functions/admin-save-product.js`,
+  `admin-delete-product.js` — the admin-only backend for adding,
+  editing, and removing products (same session-cookie protection as
+  the rest of the admin area).
+- `admin-products.html` — the new admin page.
+- `shop.html` no longer contains any product HTML directly — it
+  fetches and renders everything from the database on load. If the
+  fetch fails (e.g. the site is offline), the page shows a friendly
+  "could not load the shop" message instead of a blank page.
+- `script.js`'s cart/stock logic was refactored slightly so it can
+  safely run again on dynamically-loaded content (`shop.html` calls
+  `window.GlowByPCart.initCartUI(...)` after rendering products) —
+  the on-page behavior for customers (Add to Cart, stock notes,
+  Sold Out) is unchanged.
 
-Update this number whenever you sell a unit (in the studio or a future
-real online order) or restock. Every place that product appears
-(homepage preview, shop page, its product page) has its own button with
-its own `data-stock` — update all of them to the same number so they
-stay in sync.
-
-**For your own physical count**, since this is a manual system, keep a
-simple running list somewhere outside the website — a Google Sheet or
-even the Notes app works fine — with one row per product and a current
-count. Update that sheet first when you sell or restock something, then
-copy the new number into the matching `data-stock` value on the site.
-When you're ready for real-time syncing (stock that updates itself as
-orders come in), that's when connecting a platform like Shopify or
-Square becomes worth it — until then, this manual approach keeps things
-simple and free.
+**Still static, not yet connected to the database:** `index.html`'s
+homepage tiles and `product.html` (the individual product detail page
+template). `product.html` still shows one hardcoded example product
+regardless of which product you click through from — building it out
+as a real per-product page (reading `?id=` and fetching the matching
+product) is a reasonable next phase whenever you want it.
 
 ## File structure
 
@@ -243,8 +267,9 @@ simple and free.
 index.html      Home
 about.html      About Me
 services.html   Services
-shop.html       Shop Skincare (category grid)
-product.html    Product detail template
+shop.html       Shop Skincare (renders live from the products database)
+product.html    Product detail template (still static, see Phase 3 notes)
+admin-products.html  Admin: manage products, gifts, and stock
 cart.html       Cart (localStorage demo)
 reviews.html    Client Love
 contact.html    Let's Connect

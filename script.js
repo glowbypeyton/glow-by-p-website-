@@ -221,8 +221,8 @@ document.addEventListener('DOMContentLoaded', function () {
      stock changes (a sale in the studio, a restock, etc). See
      README.md for exactly where to edit this per product.
   ========================================================= */
-  function initStockDisplays () {
-    document.querySelectorAll('[data-add-to-cart], [data-buy-now]').forEach(function (btn) {
+  function initStockDisplays (root) {
+    (root || document).querySelectorAll('[data-add-to-cart], [data-buy-now]').forEach(function (btn) {
       var stockAttr = btn.getAttribute('data-stock');
       if (stockAttr === null) return; // no stock tracking set for this button
       var stock = parseInt(stockAttr, 10);
@@ -262,34 +262,54 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
   }
-  initStockDisplays();
+  /* Binds Add to Cart / Buy Now clicks within `root` (default: whole
+     page). Safe to call more than once — already-bound buttons are
+     skipped via data-cart-bound, so pages that render product cards
+     dynamically (shop.html, pulling from the products database) can
+     call window.GlowByPCart.initCartUI(newlyAddedElement) after each
+     render instead of duplicating this logic. */
+  function bindCartButtons (root) {
+    var scope = root || document;
 
-  document.querySelectorAll('[data-add-to-cart]').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      if (btn.disabled) return;
-      addToCart({
-        id: btn.getAttribute('data-product-id'),
-        name: btn.getAttribute('data-product-name'),
-        price: parseFloat(btn.getAttribute('data-product-price')) || 0
+    scope.querySelectorAll('[data-add-to-cart]').forEach(function (btn) {
+      if (btn.hasAttribute('data-cart-bound')) return;
+      btn.setAttribute('data-cart-bound', '1');
+      btn.setAttribute('data-label-default', btn.textContent);
+      btn.addEventListener('click', function () {
+        if (btn.disabled) return;
+        addToCart({
+          id: btn.getAttribute('data-product-id'),
+          name: btn.getAttribute('data-product-name'),
+          price: parseFloat(btn.getAttribute('data-product-price')) || 0
+        });
+        var label = btn.getAttribute('data-label-default');
+        btn.textContent = 'Added ✓';
+        setTimeout(function () { btn.textContent = label || 'Add to Cart'; }, 1400);
       });
-      var label = btn.getAttribute('data-label-default');
-      btn.textContent = 'Added ✓';
-      setTimeout(function () { btn.textContent = label || 'Add to Cart'; }, 1400);
     });
-    btn.setAttribute('data-label-default', btn.textContent);
-  });
 
-  document.querySelectorAll('[data-buy-now]').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      if (btn.disabled) return;
-      goToSquareCheckout([{
-        id: btn.getAttribute('data-product-id'),
-        name: btn.getAttribute('data-product-name'),
-        price: parseFloat(btn.getAttribute('data-product-price')) || 0,
-        qty: 1
-      }], btn);
+    scope.querySelectorAll('[data-buy-now]').forEach(function (btn) {
+      if (btn.hasAttribute('data-cart-bound')) return;
+      btn.setAttribute('data-cart-bound', '1');
+      btn.addEventListener('click', function () {
+        if (btn.disabled) return;
+        goToSquareCheckout([{
+          id: btn.getAttribute('data-product-id'),
+          name: btn.getAttribute('data-product-name'),
+          price: parseFloat(btn.getAttribute('data-product-price')) || 0,
+          qty: 1
+        }], btn);
+      });
     });
-  });
+  }
+
+  function initCartUI (root) {
+    initStockDisplays(root);
+    bindCartButtons(root);
+  }
+
+  initCartUI();
+  window.GlowByPCart = { initCartUI: initCartUI };
 
   /* ---------------- Cart page render ---------------- */
   var cartRoot = document.querySelector('[data-cart-root]');

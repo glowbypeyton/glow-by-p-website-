@@ -109,7 +109,7 @@ p{ font-weight:300; }
 /* Rust — warm fall accent for the temporary Fall Specials promo only.
    Not part of the 4-color brand palette above; remove this block along
    with the #fallSpecials section once the promo ends. */
-.bg-rust{ background-color:#6E5642; color: var(--cream); }
+.bg-rust{ background-color:#8C5A3A; color: var(--cream); }
 .bg-rust h1, .bg-rust h2, .bg-rust h3{ color: var(--cream); font-weight:700; }
 .bg-rust .eyebrow{ color: var(--cream); font-weight:700; }
 .bg-rust .eyebrow-badge{ background:rgba(255,255,255,0.18); padding:7px 18px; border-radius:999px; letter-spacing:0.22em; }

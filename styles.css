@@ -122,6 +122,13 @@ p{ font-weight:300; }
 .bg-rust .duo-card .eyebrow{ color: var(--forest); }
 .bg-rust .duo-card h3{ color: var(--espresso); font-weight:700; }
 .bg-olive-mist{ background-color: var(--sage); background-image: var(--linen-dark); }
+/* Floral pattern for the Services page accent sections only (scoped via
+   body.page-services so every other page's .bg-olive-mist is unaffected). */
+.page-services .bg-olive-mist{
+  background-image: linear-gradient(rgba(102,107,78,0.55), rgba(102,107,78,0.55)), url('images/services-bg-floral.jpg');
+  background-repeat: no-repeat, repeat;
+  background-size: cover, 260px auto;
+}
 .bg-beige{ background: var(--beige); }
 .bg-sage-tint{ background: var(--sage-tint); }
 .bg-espresso{ background-color: var(--espresso); background-image: var(--linen-light); color: var(--cream); }

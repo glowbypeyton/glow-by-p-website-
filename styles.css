@@ -110,8 +110,8 @@ p{ font-weight:300; }
    Not part of the 4-color brand palette above; remove this block along
    with the #fallSpecials section once the promo ends. */
 .bg-rust{
-  background-color:#8C5A3A; color: var(--cream);
-  background-image: linear-gradient(rgba(50,32,20,0.6), rgba(50,32,20,0.6)), url('images/fall-specials-bg.jpg');
+  background-color:#A35A28; color: var(--cream);
+  background-image: linear-gradient(rgba(90,45,15,0.55), rgba(90,45,15,0.55)), url('images/fall-specials-bg.jpg');
   background-repeat: no-repeat, repeat;
   background-size: cover, 220px auto;
 }

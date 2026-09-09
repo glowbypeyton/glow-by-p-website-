@@ -106,6 +106,16 @@ p{ font-weight:300; }
 .bg-sage .eyebrow{ color: var(--beige); }
 .bg-sage .duo-card .eyebrow, .bg-sage .path-card .eyebrow, .bg-sage .review-card .eyebrow{ color: var(--forest); }
 .bg-sage .duo-card h3, .bg-sage .path-card h3, .bg-sage .review-card h3, .bg-sage .svc-card h3 { color: var(--espresso); }
+/* Rust — warm fall accent for the temporary Fall Specials promo only.
+   Not part of the 4-color brand palette above; remove this block along
+   with the #fallSpecials section once the promo ends. */
+.bg-rust{ background-color:#A3492A; color: var(--cream); }
+.bg-rust h1, .bg-rust h2, .bg-rust h3{ color: var(--cream); font-weight:700; }
+.bg-rust .eyebrow{ color: var(--cream); font-weight:700; }
+.bg-rust .eyebrow-badge{ background:rgba(255,255,255,0.18); padding:7px 18px; border-radius:999px; letter-spacing:0.22em; }
+.bg-rust .lede{ color: var(--cream); opacity:0.95; font-weight:500; }
+.bg-rust .duo-card .eyebrow{ color: var(--forest); }
+.bg-rust .duo-card h3{ color: var(--espresso); font-weight:700; }
 .bg-olive-mist{ background-color: var(--sage); background-image: var(--linen-dark); }
 .bg-beige{ background: var(--beige); }
 .bg-sage-tint{ background: var(--sage-tint); }

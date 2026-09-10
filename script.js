@@ -47,6 +47,42 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
+  /* ---------------- Category photo slideshows (Services page) ---------------- */
+  document.querySelectorAll('[data-slideshow]').forEach(function (el) {
+    var slides = el.querySelectorAll('.slide');
+    if (slides.length <= 1) { el.classList.add('single-slide'); return; }
+
+    var dotsWrap = el.querySelector('.slide-dots');
+    var dots = [];
+    slides.forEach(function (_, i) {
+      var dot = document.createElement('button');
+      dot.className = 'slide-dot' + (i === 0 ? ' active' : '');
+      dot.setAttribute('aria-label', 'Show photo ' + (i + 1));
+      dot.addEventListener('click', function () { show(i); });
+      dotsWrap.appendChild(dot);
+      dots.push(dot);
+    });
+
+    var index = 0;
+    function show (i) {
+      index = (i + slides.length) % slides.length;
+      slides.forEach(function (s, si) { s.classList.toggle('active', si === index); });
+      dots.forEach(function (d, di) { d.classList.toggle('active', di === index); });
+    }
+
+    var prevBtn = el.querySelector('.slide-prev');
+    var nextBtn = el.querySelector('.slide-next');
+    if (prevBtn) prevBtn.addEventListener('click', function () { show(index - 1); resetAuto(); });
+    if (nextBtn) nextBtn.addEventListener('click', function () { show(index + 1); resetAuto(); });
+
+    var autoTimer;
+    function startAuto () { autoTimer = setInterval(function () { show(index + 1); }, 4500); }
+    function resetAuto () { clearInterval(autoTimer); startAuto(); }
+    startAuto();
+    el.addEventListener('mouseenter', function () { clearInterval(autoTimer); });
+    el.addEventListener('mouseleave', startAuto);
+  });
+
   /* =========================================================
      SQUARE CHECKOUT — combined multi-item checkout.
      Calls a Netlify serverless function (netlify/functions/

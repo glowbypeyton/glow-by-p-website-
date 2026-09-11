@@ -123,8 +123,10 @@ p{ font-weight:300; }
 .bg-rust .duo-card h3{ color: var(--espresso); font-weight:700; }
 .bg-olive-mist{ background-color: var(--sage); background-image: var(--linen-dark); }
 /* Floral pattern for accent sections, scoped via body.floral-mist so
-   pages that don't opt in keep their plain .bg-olive-mist color. */
-.floral-mist .bg-olive-mist{
+   pages that don't opt in keep their plain .bg-olive-mist/.bg-sage color.
+   Applied to both greens so alternating sections don't go
+   textured/flat/textured/flat down the page. */
+.floral-mist .bg-olive-mist, .floral-mist .bg-sage{
   background-image: linear-gradient(rgba(102,107,78,0.55), rgba(102,107,78,0.55)), url('images/services-bg-floral.jpg');
   background-repeat: no-repeat, repeat;
   background-size: cover, 260px auto;

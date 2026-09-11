@@ -217,6 +217,17 @@ Location's address is set correctly in your Square dashboard
 (Locations → your location → Address), since this site doesn't
 control that value directly.
 
+**Sales tax:** every checkout adds Murrieta, CA's combined sales tax
+rate (8.75%, confirmed against CDTFA's official rate table) as a
+separate line at checkout — it's not baked into each product's price.
+Edit `SALES_TAX_PERCENT` near the top of `create-checkout.js` if the
+rate ever changes. One thing worth double-checking with a tax advisor:
+this applies the same rate to every line item, including gift cards —
+some states treat gift card purchases as not taxable until they're
+later redeemed for a taxable item. If that applies to you, gift cards
+would need to be excluded from the tax (Square supports per-line-item
+tax scoping for this — ask if you want that built in).
+
 ## Order tracking (Phase 4 — admin Orders page)
 
 Every completed Square payment now shows up automatically at

@@ -17,6 +17,9 @@
 
 const SQUARE_VERSION = '2025-01-23';
 const SQUARE_API_BASE = 'https://connect.squareup.com/v2';
+// Combined CA sales tax rate for Murrieta, 92563 — from CDTFA's
+// official rate table. Update this if the rate ever changes.
+const SALES_TAX_PERCENT = 8.75;
 
 exports.handler = async function (event) {
   if (event.httpMethod !== 'POST') {
@@ -78,6 +81,19 @@ exports.handler = async function (event) {
         order: {
           location_id: locationId,
           line_items: lineItems,
+          // Murrieta, CA (92563) combined sales tax rate — confirmed
+          // against CDTFA's official rate table. Applied to the whole
+          // order automatically; Square adds it as a separate line on
+          // checkout, it's not baked into each item's price above.
+          // If this ever changes, update SALES_TAX_PERCENT only.
+          taxes: [
+            {
+              uid: 'sales-tax',
+              name: 'Sales Tax',
+              percentage: String(SALES_TAX_PERCENT),
+              scope: 'ORDER'
+            }
+          ],
           // Marks every order as in-store pickup — Square's hosted
           // checkout shows the pickup location's address (whatever is
           // set on this Location in your Square dashboard) and this

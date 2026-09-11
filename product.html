@@ -50,7 +50,7 @@
   <section class="section bg-cream" style="padding-top:16px;">
     <div class="wrap grid-2" style="align-items:flex-start;">
       <div class="reveal in">
-        <div class="ph ph-portrait"><span class="ph-label">Product photo placeholder — primary image</span></div>
+        <div class="ph ph-portrait" id="prodPhoto"><span class="ph-label">Product photo placeholder — primary image</span></div>
         <div class="grid-3 mt-16">
           <div class="ph ph-square"><span class="ph-label">Detail shot</span></div>
           <div class="ph ph-square"><span class="ph-label">Texture shot</span></div>
@@ -172,6 +172,16 @@ if (!productId) {
       document.getElementById('prodName').textContent = p.name;
       document.getElementById('prodPrice').textContent = p.price_label || ('$' + Number(p.price).toFixed(0));
       document.getElementById('prodDesc').textContent = p.description || '';
+
+      if (p.image_url) {
+        var img = document.createElement('img');
+        img.src = p.image_url;
+        img.alt = p.name;
+        img.className = 'ph-photo';
+        var photoBox = document.getElementById('prodPhoto');
+        photoBox.innerHTML = '';
+        photoBox.appendChild(img);
+      }
 
       var addBtn = document.getElementById('btnAddToCart');
       var buyBtn = document.getElementById('btnBuyNow');

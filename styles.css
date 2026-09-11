@@ -45,6 +45,22 @@
   --linen-light: none;
 }
 
+/* ---------- page transitions ---------- */
+/* Cross-fades between full page navigations, in browsers that support
+   the View Transitions API for same-origin multi-page navigation
+   (Chrome/Edge 126+ as of writing). Pure progressive enhancement —
+   browsers without support just do today's instant navigation, so
+   this can never break anything. Duration/easing roughly match the
+   .reveal scroll-fade elsewhere so in-page and page-to-page motion
+   feel like one system. */
+@view-transition {
+  navigation: auto;
+}
+::view-transition-old(root), ::view-transition-new(root){
+  animation-duration: 0.35s;
+  animation-timing-function: ease;
+}
+
 *{ box-sizing:border-box; margin:0; padding:0; }
 html{ scroll-behavior:smooth; }
 @media (prefers-reduced-motion: reduce){ html{ scroll-behavior:auto; } }

@@ -204,18 +204,63 @@ help setting that up.
 **Every online order is pickup only.** `create-checkout.js` marks the
 order as an in-store Pickup fulfillment (`schedule_type: "ASAP"`), so
 Square's checkout page shows the customer your pickup location's
-address automatically, plus a short note ("Pickup at Glow by P —
-Holistic Haven, Murrieta, CA, 92563."). The prep time is set to 2
-hours before the order is marked ready (same-day pickup) — edit
-`prep_time_duration` in `create-checkout.js` (RFC 3339 duration
-format, e.g. `PT2H` for 2 hours, `PT30M` for 30 minutes) if you want a
-different window.
+address automatically, plus a short note ("PICKUP ONLY — no shipping.
+Pick up in person at Glow by P, Holistic Haven, Murrieta, CA,
+92563."). The prep time is set to 2 hours before the order is marked
+ready (same-day pickup) — edit `prep_time_duration` in
+`create-checkout.js` (RFC 3339 duration format, e.g. `PT2H` for 2
+hours, `PT30M` for 30 minutes) if you want a different window.
 
 **Important:** the address Square shows is whatever is on file for
 the Location tied to your `SQUARE_LOCATION_ID` — double check that
 Location's address is set correctly in your Square dashboard
 (Locations → your location → Address), since this site doesn't
 control that value directly.
+
+## Order tracking (Phase 4 — admin Orders page)
+
+Every completed Square payment now shows up automatically at
+`/admin-orders.html` — customer name/email (collected by Square at
+pickup checkout), items purchased, total, and when it happened. This
+works via a webhook: Square calls a function on this site the moment
+a payment finishes, and that function saves the order to the
+database.
+
+**Step 1 — Create the webhook subscription in Square**
+
+1. Go to [developer.squareup.com/apps](https://developer.squareup.com/apps),
+   open the same application you used for checkout, and go to
+   **Webhooks** in the left menu.
+2. Click **+ Add Endpoint**.
+3. **Notification URL:**
+   `https://glowbypeyton.netlify.app/.netlify/functions/square-webhook`
+   — this must match exactly (it's hardcoded in `square-webhook.js`
+   as `NOTIFICATION_URL`, since Square signs each request using this
+   URL — if you ever change your site's domain again, update both
+   places together).
+4. **API version:** match the version already used elsewhere in this
+   project (`2025-01-23`, set as `SQUARE_VERSION` in both
+   `create-checkout.js` and `square-webhook.js`).
+5. Under **Events**, subscribe to **`payment.updated`** only.
+6. Save. Square will show you a **Signature Key** for this endpoint —
+   copy it.
+
+**Step 2 — Add the signature key to Netlify**
+
+1. Netlify dashboard → this site → **Site configuration** →
+   **Environment variables**.
+2. Add `SQUARE_WEBHOOK_SIGNATURE_KEY` with the value from Step 1.
+3. Trigger a new deploy so the function picks it up.
+
+Without this key set, `square-webhook.js` rejects every request (it
+can't verify they really came from Square), so orders just won't
+appear — nothing breaks elsewhere.
+
+**Why nothing is recorded at checkout time:** `create-checkout.js`
+only ever creates a Square payment *link* — someone could open that
+link and never pay. The `orders` table only gets a row once Square
+confirms the payment actually completed (`status: "COMPLETED"`), so
+abandoned checkouts never show up as fake orders.
 
 ## Product Management (Phase 3 of the client/admin portal project)
 
@@ -271,11 +316,9 @@ configured for the admin dashboard and client portal.
   Sold Out) is unchanged.
 
 **Still static, not yet connected to the database:** `index.html`'s
-homepage tiles and `product.html` (the individual product detail page
-template). `product.html` still shows one hardcoded example product
-regardless of which product you click through from — building it out
-as a real per-product page (reading `?id=` and fetching the matching
-product) is a reasonable next phase whenever you want it.
+homepage tiles. `product.html` now reads `?id=<slug>` from the URL and
+fetches the matching product from the database (name, price,
+description, photo, stock) — it's no longer the static example page.
 
 ## File structure
 
@@ -284,8 +327,9 @@ index.html      Home
 about.html      About Me
 services.html   Services
 shop.html       Shop Skincare (renders live from the products database)
-product.html    Product detail template (still static, see Phase 3 notes)
+product.html    Product detail (loads the real product via ?id=<slug>)
 admin-products.html  Admin: manage products, gifts, and stock
+admin-orders.html    Admin: completed orders (see Phase 4 notes)
 cart.html       Cart (localStorage demo)
 reviews.html    Client Love
 contact.html    Let's Connect

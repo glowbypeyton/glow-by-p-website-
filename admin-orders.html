@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orders — Admin — Glow by P</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .order-row{ background:var(--sage-tint); border:1px solid var(--line-soft); border-radius:18px; padding:20px 24px; margin-bottom:14px; }
+  .order-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap; }
+  .order-meta{ font-size:0.72rem; opacity:0.55; letter-spacing:0.04em; }
+  .order-items{ margin-top:14px; padding-top:14px; border-top:1px solid var(--line-soft); }
+  .order-item-row{ display:flex; justify-content:space-between; gap:12px; font-size:0.88rem; opacity:0.85; padding:3px 0; }
+  .order-total{ font-family:var(--serif); font-size:1.1rem; color:var(--espresso); }
+  .empty-state{ opacity:0.6; padding:40px 0; text-align:center; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="nav-inner" style="justify-content:space-between;">
+    <a href="index.html" class="logo-link"><img src="images/glow-by-p-logo.png" alt="Glow by P" class="logo-img"></a>
+    <div style="display:flex; gap:14px; align-items:center; flex-wrap:wrap;">
+      <a href="admin-dashboard.html" class="btn btn-line btn-sm">Inbox</a>
+      <a href="admin-clients.html" class="btn btn-line btn-sm">Clients</a>
+      <a href="admin-products.html" class="btn btn-line btn-sm">Products</a>
+      <button id="logoutBtn" class="btn btn-line btn-sm">Log Out</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="section bg-cream" style="padding-top: clamp(48px,7vw,90px); padding-bottom:20px;">
+    <div class="wrap" style="max-width:900px;">
+      <span class="eyebrow">Admin</span>
+      <h1 class="h-xl mt-16">Orders</h1>
+      <p class="lede mt-16">Every completed Square payment from your shop, newest first.</p>
+    </div>
+  </section>
+
+  <section class="section bg-olive-mist" style="padding-top:20px;">
+    <div class="wrap" style="max-width:900px;">
+      <div id="loadingState" style="opacity:0.6;">Loading…</div>
+      <div id="ordersPanel" style="display:none;"></div>
+    </div>
+  </section>
+</main>
+
+<script>
+function escapeHtml(str) {
+  var div = document.createElement('div');
+  div.textContent = str == null ? '' : String(str);
+  return div.innerHTML;
+}
+function formatDate(iso) {
+  try {
+    return new Date(iso).toLocaleString(undefined, { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
+  } catch (e) { return iso; }
+}
+function formatMoney(n) {
+  return '$' + Number(n).toFixed(2);
+}
+
+function renderOrders(orders) {
+  var panel = document.getElementById('ordersPanel');
+  if (!orders.length) {
+    panel.innerHTML = '<p class="empty-state">No orders yet — they\'ll show up here automatically once a customer completes checkout.</p>';
+    return;
+  }
+  panel.innerHTML = orders.map(function (o) {
+    var items = Array.isArray(o.items) ? o.items : [];
+    var itemsHtml = items.map(function (it) {
+      return '<div class="order-item-row"><span>' + escapeHtml(it.name) + (it.qty > 1 ? ' &times; ' + it.qty : '') + '</span><span>' + formatMoney(it.price * (it.qty || 1)) + '</span></div>';
+    }).join('');
+    return '' +
+      '<div class="order-row">' +
+        '<div class="order-top">' +
+          '<div>' +
+            '<h3 class="h-md">' + escapeHtml(o.customer_name || 'Guest') + '</h3>' +
+            '<div class="order-meta mt-8">' + (o.customer_email ? escapeHtml(o.customer_email) : 'No email on file') + '</div>' +
+          '</div>' +
+          '<div style="text-align:right;">' +
+            '<div class="order-total">' + formatMoney(o.total_amount) + '</div>' +
+            '<div class="order-meta mt-8">' + formatDate(o.created_at) + '</div>' +
+          '</div>' +
+        '</div>' +
+        (itemsHtml ? '<div class="order-items">' + itemsHtml + '</div>' : '') +
+      '</div>';
+  }).join('');
+}
+
+fetch('/.netlify/functions/get-orders')
+  .then(function (res) {
+    if (res.status === 401) {
+      window.location.href = 'admin-login.html';
+      return null;
+    }
+    return res.json();
+  })
+  .then(function (data) {
+    if (!data) return;
+    document.getElementById('loadingState').style.display = 'none';
+    document.getElementById('ordersPanel').style.display = 'block';
+    renderOrders(data.orders || []);
+  })
+  .catch(function () {
+    document.getElementById('loadingState').textContent = 'Could not load orders. Please refresh.';
+  });
+
+document.getElementById('logoutBtn').addEventListener('click', function () {
+  fetch('/.netlify/functions/admin-logout', { method: 'POST' }).then(function () {
+    window.location.href = 'admin-login.html';
+  });
+});
+</script>
+
+</body>
+</html>

@@ -3,18 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gentle Cream Cleanser — Glow by P Shop</title>
-<meta name="description" content="Product detail page template for Glow by P skincare products.">
+<title id="pageTitle">Product — Glow by P Shop</title>
+<meta name="description" content="Shop skincare products from Glow by P.">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <!--
-  PRODUCT PAGE TEMPLATE
-  This page shows the full layout for one product (Gentle Cream Cleanser)
-  as a working example. Duplicate this file per product, or replace the
-  content block below with data pulled dynamically from your commerce
-  platform (Shopify, Square, etc.) once connected — the Add to Cart /
-  Buy Now buttons already carry the data-product attributes that logic needs.
+  This page loads the real product shown to a visitor based on the
+  ?id=<slug> URL parameter (set by shop.html/index.html links) by
+  fetching /.netlify/functions/get-products and matching on slug.
+  See the <script> block near the bottom of this file.
 -->
 
 <header class="site-header">
@@ -60,33 +58,23 @@
         </div>
       </div>
 
-      <div class="reveal">
-        <span class="eyebrow">Cleansers</span>
-        <h1 class="h-xl mt-16">Gentle Cream Cleanser</h1>
-        <p class="mt-8" style="opacity:0.6; font-size:0.9rem;">4 fl oz</p>
-        <p class="h-md mt-16" style="font-family:var(--serif); color:var(--espresso);">$32</p>
+      <div class="reveal" id="productBody">
+        <span class="eyebrow" id="prodCategory">&nbsp;</span>
+        <h1 class="h-xl mt-16" id="prodName">Loading…</h1>
+        <p class="h-md mt-16" style="font-family:var(--serif); color:var(--espresso);" id="prodPrice">&nbsp;</p>
         <span class="stock-note" id="stockNote"></span>
-        <p class="lede mt-24" style="max-width:none;">A soft, non-stripping daily cleanser that removes makeup, SPF, and impurities without disturbing the skin barrier. Formulated to leave skin feeling calm and comfortable&mdash;never tight.</p>
+        <p class="lede mt-24" style="max-width:none;" id="prodDesc"></p>
 
-        <div class="btn-row">
-          <button class="btn btn-line btn-full" data-add-to-cart data-stock-target="stockNote" data-product-id="cleanser-1" data-product-name="Gentle Cream Cleanser" data-product-price="32" data-stock="14">Add to Cart</button>
-          <button class="btn btn-solid btn-full" data-buy-now data-stock-target="stockNote" data-product-id="cleanser-1" data-product-name="Gentle Cream Cleanser" data-product-price="32" data-stock="14">Buy Now</button>
+        <div class="btn-row" id="prodActions" hidden>
+          <button class="btn btn-line btn-full" id="btnAddToCart" data-add-to-cart data-stock-target="stockNote" data-product-id="" data-product-name="" data-product-price="0">Add to Cart</button>
+          <button class="btn btn-solid btn-full" id="btnBuyNow" data-buy-now data-stock-target="stockNote" data-product-id="" data-product-name="" data-product-price="0">Buy Now</button>
         </div>
 
         <div class="mt-56">
-          <h3 class="h-md">Product Details</h3>
-          <p class="mt-8" style="opacity:0.78;">A cream-to-milk formula that emulsifies with water for a gentle, effective cleanse. Free of sulfates and synthetic fragrance.</p>
+          <p style="opacity:0.78;">Not sure if this is right for you? <a href="contact.html" style="border-bottom:1px solid var(--olive);">Send Peyton a message.</a></p>
         </div>
-        <hr style="border:none;border-top:1px solid var(--line); margin:24px 0;">
-        <div>
-          <h3 class="h-md">How to Use</h3>
-          <p class="mt-8" style="opacity:0.78;">Massage a small amount onto damp skin morning and night. Rinse with lukewarm water and follow with your toner or serum.</p>
-        </div>
-        <hr style="border:none;border-top:1px solid var(--line); margin:24px 0;">
-        <div>
-          <h3 class="h-md">Who It's Best For</h3>
-          <p class="mt-8" style="opacity:0.78;">Best suited for normal, dry, or sensitive skin looking for a gentle daily cleanse. Not sure if this is right for you? <a href="contact.html" style="border-bottom:1px solid var(--olive);">Send Peyton a message.</a></p>
-        </div>
+
+        <p id="prodNotFound" hidden style="opacity:0.75;">We couldn't find this product&mdash;it may have been removed or the link is out of date. <a href="shop.html" style="border-bottom:1px solid var(--olive);">Browse the shop →</a></p>
       </div>
     </div>
   </section>
@@ -141,5 +129,64 @@
 </footer>
 
 <script src="script.js"></script>
+<script>
+// Same category labels as shop.html/admin-products.html, kept in sync manually.
+var CATEGORY_LABELS = {
+  'cleansers': 'Cleansers',
+  'toners': 'Toners + Mists',
+  'serums': 'Serums',
+  'moisturizers': 'Moisturizers',
+  'spf': 'SPF',
+  'exfoliants': 'Exfoliants',
+  'masks': 'Masks + Treatments',
+  'eye-care': 'Eye Care',
+  'body-care': 'Body Care',
+  'gifts': 'Gifts'
+};
+function categoryLabel(cat) {
+  if (CATEGORY_LABELS[cat]) return CATEGORY_LABELS[cat];
+  return String(cat).replace(/-/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+}
+
+function showNotFound() {
+  document.getElementById('prodCategory').textContent = '';
+  document.getElementById('prodName').textContent = 'Product Not Found';
+  document.getElementById('prodPrice').textContent = '';
+  document.getElementById('prodDesc').textContent = '';
+  document.getElementById('prodNotFound').hidden = false;
+}
+
+var productId = new URLSearchParams(window.location.search).get('id');
+if (!productId) {
+  showNotFound();
+} else {
+  fetch('/.netlify/functions/get-products')
+    .then(function (res) { return res.json(); })
+    .then(function (data) {
+      var products = (data && data.products) || [];
+      var p = products.find(function (item) { return item.slug === productId; });
+      if (!p) { showNotFound(); return; }
+
+      document.getElementById('pageTitle').textContent = p.name + ' — Glow by P Shop';
+      document.getElementById('prodCategory').textContent = categoryLabel(p.category);
+      document.getElementById('prodName').textContent = p.name;
+      document.getElementById('prodPrice').textContent = p.price_label || ('$' + Number(p.price).toFixed(0));
+      document.getElementById('prodDesc').textContent = p.description || '';
+
+      var addBtn = document.getElementById('btnAddToCart');
+      var buyBtn = document.getElementById('btnBuyNow');
+      [addBtn, buyBtn].forEach(function (btn) {
+        btn.setAttribute('data-product-id', p.slug);
+        btn.setAttribute('data-product-name', p.name);
+        btn.setAttribute('data-product-price', Number(p.price));
+        btn.setAttribute('data-stock', Number(p.stock));
+      });
+      document.getElementById('prodActions').hidden = false;
+
+      if (window.GlowByPCart) { window.GlowByPCart.initCartUI(document.getElementById('productBody')); }
+    })
+    .catch(showNotFound);
+}
+</script>
 </body>
 </html>

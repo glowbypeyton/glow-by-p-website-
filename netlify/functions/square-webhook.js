@@ -45,6 +45,13 @@ function isValidSignature(signatureHeader, rawBody, signatureKey) {
 }
 
 exports.handler = async function (event) {
+  // Square does a reachability check (GET/HEAD) against this URL
+  // before it'll let you save a webhook subscription in the
+  // dashboard — it needs a normal response, not a 405, or the
+  // dashboard reports the URL as invalid.
+  if (event.httpMethod === 'GET' || event.httpMethod === 'HEAD') {
+    return { statusCode: 200, body: 'OK' };
+  }
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method not allowed' };
   }

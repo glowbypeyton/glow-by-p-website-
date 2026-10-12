@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /admin-
+Disallow: /client-
+Disallow: /cart.html
+
+Sitemap: https://glowbypeyton.netlify.app/sitemap.xml

@@ -155,9 +155,10 @@ var productId = new URLSearchParams(window.location.search).get('id');
 if (!productId) {
   showNotFound();
 } else {
-  fetch('/.netlify/functions/get-products')
+  fetch(window.GlowByPSale.productsUrl())
     .then(function (res) { return res.json(); })
     .then(function (data) {
+      window.GlowByPSale.showBanner(data && data.sale);
       var products = (data && data.products) || [];
       var p = products.find(function (item) { return item.slug === productId; });
       if (!p) { showNotFound(); return; }
@@ -165,7 +166,7 @@ if (!productId) {
       document.getElementById('pageTitle').textContent = p.name + ' — Glow by P Shop';
       document.getElementById('prodCategory').textContent = categoryLabel(p.category);
       document.getElementById('prodName').textContent = p.name;
-      document.getElementById('prodPrice').textContent = p.price_label || ('$' + Number(p.price).toFixed(0));
+      document.getElementById('prodPrice').innerHTML = window.GlowByPSale.priceHtml(p);
       document.getElementById('prodDesc').textContent = p.description || '';
 
       if (p.image_url) {
@@ -183,7 +184,7 @@ if (!productId) {
       [addBtn, buyBtn].forEach(function (btn) {
         btn.setAttribute('data-product-id', p.slug);
         btn.setAttribute('data-product-name', p.name);
-        btn.setAttribute('data-product-price', Number(p.price));
+        btn.setAttribute('data-product-price', window.GlowByPSale.cartPrice(p));
         btn.setAttribute('data-stock', Number(p.stock));
       });
       document.getElementById('prodActions').hidden = false;

@@ -15,6 +15,9 @@
  * See README.md for the full setup walkthrough.
  * ------------------------------------------------------------- */
 
+const { getDatabase } = require('@netlify/database');
+const { SALE, isSaleActive, appliesTo } = require('./lib/sale');
+
 const SQUARE_VERSION = '2025-01-23';
 const SQUARE_API_BASE = 'https://connect.squareup.com/v2';
 // Combined CA sales tax rate for Murrieta, 92563 — from CDTFA's
@@ -54,23 +57,44 @@ exports.handler = async function (event) {
 
   // Build Square line items from the cart. Prices on the site are
   // stored in whole dollars (e.g. 32), Square wants cents (3200).
-  // The product slug rides along as line-item metadata so that
-  // square-webhook.js can subtract the sold quantity from the right
-  // product's stock once the payment completes.
-  const lineItems = cart.map(function (item) {
-    const lineItem = {
-      name: String(item.name).slice(0, 500),
-      quantity: String(item.qty || 1),
-      base_price_money: {
-        amount: Math.round(Number(item.price) * 100),
-        currency: 'USD'
-      }
-    };
-    if (item.id) {
-      lineItem.metadata = { slug: String(item.id).slice(0, 255) };
+  // Names and prices come from the products table, never from the
+  // browser — so nobody can edit a price before paying. The product
+  // slug rides along as line-item metadata so square-webhook.js can
+  // subtract the sold quantity from stock once the payment completes.
+  let productsBySlug = {};
+  try {
+    const db = getDatabase({ connectionString: process.env.DATABASE_CONNECTION_STRING });
+    const rows = await db.sql`SELECT slug, name, category, price FROM products`;
+    rows.forEach(function (p) { productsBySlug[p.slug] = p; });
+  } catch (e) {
+    return { statusCode: 500, body: JSON.stringify({ error: 'Could not load products. Please try again.' }) };
+  }
+
+  const saleOn = isSaleActive();
+  const SALE_UID = 'store-sale';
+  let anyDiscounted = false;
+  const lineItems = [];
+  for (const item of cart) {
+    const product = productsBySlug[String(item && item.id)];
+    if (!product) {
+      return { statusCode: 400, body: JSON.stringify({ error: 'An item in your cart is no longer available. Please remove it and try again.' }) };
     }
-    return lineItem;
-  });
+    const qty = Math.min(Math.max(parseInt(item.qty, 10) || 1, 1), 99);
+    const lineItem = {
+      name: String(product.name).slice(0, 500),
+      quantity: String(qty),
+      base_price_money: {
+        amount: Math.round(Number(product.price) * 100),
+        currency: 'USD'
+      },
+      metadata: { slug: String(product.slug).slice(0, 255) }
+    };
+    if (saleOn && appliesTo(product)) {
+      lineItem.applied_discounts = [{ discount_uid: SALE_UID }];
+      anyDiscounted = true;
+    }
+    lineItems.push(lineItem);
+  }
 
   const idempotencyKey =
     Date.now().toString(36) + Math.random().toString(36).slice(2);
@@ -88,6 +112,17 @@ exports.handler = async function (event) {
         order: {
           location_id: locationId,
           line_items: lineItems,
+          // Store-wide sale (see lib/sale.js) — shows on Square's
+          // checkout as its own discount line, applied only to the
+          // line items tagged above (never gift cards).
+          ...(anyDiscounted ? {
+            discounts: [{
+              uid: SALE_UID,
+              name: SALE.name + ' (' + SALE.percent + '% off)',
+              percentage: String(SALE.percent),
+              scope: 'LINE_ITEM'
+            }]
+          } : {}),
           // Murrieta, CA (92563) combined sales tax rate — confirmed
           // against CDTFA's official rate table. Applied to the whole
           // order automatically; Square adds it as a separate line on

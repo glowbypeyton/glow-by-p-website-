@@ -134,7 +134,7 @@ function categoryLabel(cat) {
 }
 
 function productCardHtml(p) {
-  var priceText = p.price_label ? escapeHtml(p.price_label) : '$' + Number(p.price).toFixed(0);
+  var priceText = window.GlowByPSale.priceHtml(p);
   var photo = p.image_url
     ? '<img src="' + escapeHtml(p.image_url) + '" alt="" class="product-photo">'
     : '<div class="ph ph-product"><span class="ph-label">Photo placeholder</span></div>';
@@ -146,16 +146,17 @@ function productCardHtml(p) {
         '<p class="product-desc">' + escapeHtml(p.description) + '</p>' +
         '<span class="product-price">' + priceText + '</span>' +
         '<div class="product-actions">' +
-          '<button class="btn btn-line" data-add-to-cart data-product-id="' + escapeHtml(p.slug) + '" data-product-name="' + escapeHtml(p.name) + '" data-product-price="' + Number(p.price) + '" data-stock="' + Number(p.stock) + '">Add to Cart</button>' +
+          '<button class="btn btn-line" data-add-to-cart data-product-id="' + escapeHtml(p.slug) + '" data-product-name="' + escapeHtml(p.name) + '" data-product-price="' + window.GlowByPSale.cartPrice(p) + '" data-stock="' + Number(p.stock) + '">Add to Cart</button>' +
         '</div>' +
       '</div>' +
     '</div>';
 }
 
-fetch('/.netlify/functions/get-products')
+fetch(window.GlowByPSale.productsUrl())
   .then(function (res) { return res.json(); })
   .then(function (data) {
     document.getElementById('loadingState').style.display = 'none';
+    window.GlowByPSale.showBanner(data && data.sale);
     var products = (data && data.products) || [];
 
     var byCategory = {};

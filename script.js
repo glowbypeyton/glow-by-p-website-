@@ -1,3 +1,56 @@
+/* ---------------- Store-wide sale helpers ----------------
+   The sale itself (percent, dates, excluded categories) is set in
+   netlify/functions/lib/sale.js. get-products returns a sale_price on
+   each discounted product plus a `sale` summary; these helpers turn
+   that into crossed-out prices and a banner. Add ?salepreview=1 to a
+   shop/home/product URL to preview the sale look before it starts. */
+window.GlowByPSale = (function () {
+  var preview = /[?&]salepreview=1\b/.test(window.location.search);
+
+  function esc (str) {
+    var div = document.createElement('div');
+    div.textContent = str == null ? '' : String(str);
+    return div.innerHTML;
+  }
+  function money (n) {
+    n = Number(n);
+    return '$' + (n % 1 === 0 ? n.toFixed(0) : n.toFixed(2));
+  }
+  return {
+    productsUrl: function () {
+      return '/.netlify/functions/get-products' + (preview ? '?preview=sale' : '');
+    },
+    // Price the cart should use for this product.
+    cartPrice: function (p) {
+      return p.sale_price != null ? Number(p.sale_price) : Number(p.price);
+    },
+    // HTML for a product's price: "$52" or "<s>$52</s> $44.20".
+    priceHtml: function (p) {
+      if (p.price_label && p.sale_price == null) return esc(p.price_label);
+      if (p.sale_price == null) return money(p.price);
+      return '<s class="price-was">' + money(p.price) + '</s> <span class="price-sale">' + money(p.sale_price) + '</span>';
+    },
+    // Puts a sale ribbon at the top of <main>, once.
+    showBanner: function (sale) {
+      if (!sale || !sale.active || document.querySelector('.sale-ribbon')) return;
+      var main = document.querySelector('main');
+      if (!main) return;
+      var ends = '';
+      if (sale.end) {
+        // Sale ends at midnight; show the last full day it runs.
+        var last = new Date(Date.parse(sale.end) - 1);
+        ends = ' &middot; ends ' + last.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'America/Los_Angeles' });
+      }
+      var bar = document.createElement('a');
+      bar.href = 'shop.html';
+      bar.className = 'sale-ribbon';
+      bar.innerHTML = '<strong>' + esc(sale.name) + '</strong> &middot; ' + Number(sale.percent) +
+        '% off all skincare' + ends + (sale.preview ? ' (preview)' : '') + '<span class="sale-ribbon-cta">Shop now →</span>';
+      main.insertBefore(bar, main.firstChild);
+    }
+  };
+})();
+
 document.addEventListener('DOMContentLoaded', function () {
 
   /* ---------------- Mobile nav ---------------- */
@@ -351,6 +404,30 @@ document.addEventListener('DOMContentLoaded', function () {
   var cartRoot = document.querySelector('[data-cart-root]');
   if (cartRoot) {
     renderCartPage();
+    syncCartPrices();
+  }
+
+  // Refresh cart prices from the live product list, so an item added
+  // before a sale started (or after it ended) shows today's price.
+  // Checkout charges the server-side price regardless.
+  function syncCartPrices () {
+    fetch('/.netlify/functions/get-products')
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+        var bySlug = {};
+        ((data && data.products) || []).forEach(function (p) { bySlug[p.slug] = p; });
+        var cart = getCart();
+        var changed = false;
+        cart.forEach(function (item) {
+          var p = bySlug[item.id];
+          if (!p) return;
+          var price = window.GlowByPSale.cartPrice(p);
+          if (item.price !== price) { item.price = price; changed = true; }
+        });
+        if (changed) { saveCart(cart); renderCartPage(); }
+        window.GlowByPSale.showBanner(data && data.sale);
+      })
+      .catch(function () {});
   }
 
   function renderCartPage () {

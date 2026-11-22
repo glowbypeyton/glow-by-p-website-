@@ -122,21 +122,24 @@ p{ font-weight:300; }
 .bg-sage .eyebrow{ color: var(--beige); }
 .bg-sage .duo-card .eyebrow, .bg-sage .path-card .eyebrow, .bg-sage .review-card .eyebrow{ color: var(--forest); }
 .bg-sage .duo-card h3, .bg-sage .path-card h3, .bg-sage .review-card h3, .bg-sage .svc-card h3, .bg-sage .category-card h3 { color: var(--espresso); }
-/* Rust — warm fall accent for the temporary Fall Specials promo only.
-   Not part of the 4-color brand palette above; remove this block along
-   with the #fallSpecials section once the promo ends. */
-.bg-rust{
-  background-color:#A35A28; color: var(--cream);
-  background-image: linear-gradient(rgba(90,45,15,0.55), rgba(90,45,15,0.55)), url('images/fall-specials-bg.jpg');
-  background-repeat: no-repeat, repeat;
-  background-size: cover, 220px auto;
+/* Holiday red — festive accent for the temporary Christmas Specials promo
+   only. Not part of the 4-color brand palette above; remove this block
+   along with the #holidaySpecials section once the promo ends. */
+.bg-holiday{
+  background-color:#7A1E24; color: var(--cream);
+  background-image:
+    radial-gradient(circle at 15% 20%, rgba(255,255,255,0.08) 0 2px, transparent 3px),
+    radial-gradient(circle at 70% 60%, rgba(255,255,255,0.06) 0 2px, transparent 3px),
+    linear-gradient(160deg, #8E2A2F 0%, #6A1A20 100%);
+  background-size: 60px 60px, 90px 90px, cover;
 }
-.bg-rust h1, .bg-rust h2, .bg-rust h3{ color: var(--cream); font-weight:700; }
-.bg-rust .eyebrow{ color: var(--cream); font-weight:700; }
-.bg-rust .eyebrow-badge{ background:rgba(255,255,255,0.18); padding:7px 18px; border-radius:999px; letter-spacing:0.22em; }
-.bg-rust .lede{ color: var(--cream); opacity:0.95; font-weight:500; }
-.bg-rust .duo-card .eyebrow{ color: var(--forest); }
-.bg-rust .duo-card h3{ color: var(--espresso); font-weight:700; }
+.bg-holiday h2{ color: var(--cream); font-weight:700; }
+.bg-holiday .section-head .eyebrow{ color: var(--cream); font-weight:700; }
+.bg-holiday .eyebrow-badge{ background:rgba(255,255,255,0.18); padding:7px 18px; border-radius:999px; letter-spacing:0.22em; }
+.bg-holiday .lede{ color: var(--cream); opacity:0.95; font-weight:500; }
+.bg-holiday .duo-card h3{ color: var(--espresso); font-weight:700; }
+.bg-holiday .special-meta{ font-family:var(--serif); color:#7A1E24; font-weight:600; opacity:1; margin:0; }
+.bg-holiday .special-desc{ color: var(--espresso); opacity:0.85; font-size:0.92rem; line-height:1.5; margin:0; }
 .bg-olive-mist{ background-color: var(--sage); background-image: var(--linen-dark); }
 /* Floral pattern for accent sections, scoped via body.floral-mist so
    pages that don't opt in keep their plain .bg-olive-mist/.bg-sage color.

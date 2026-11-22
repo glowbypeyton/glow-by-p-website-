@@ -5,7 +5,8 @@
  * payment actually COMPLETES, this fetches the full order (for line
  * items and the pickup contact info Square collected at checkout)
  * and saves a row in the `orders` table so it shows up in the admin
- * Orders page.
+ * Orders page. It also subtracts the sold quantities from each
+ * product's stock (auto stock drop).
  *
  * Requires two environment variables, set in Netlify site settings
  * (Site configuration > Environment variables):
@@ -103,6 +104,7 @@ exports.handler = async function (event) {
         items = (order.line_items || []).map(function (li) {
           return {
             name: li.name,
+            slug: (li.metadata && li.metadata.slug) || null,
             qty: Number(li.quantity) || 1,
             price: li.base_price_money ? li.base_price_money.amount / 100 : 0
           };
@@ -121,15 +123,45 @@ exports.handler = async function (event) {
 
   const totalAmount = payment.amount_money ? payment.amount_money.amount / 100 : 0;
 
+  const db = getDatabase({ connectionString: process.env.DATABASE_CONNECTION_STRING });
+  let inserted;
   try {
-    const db = getDatabase({ connectionString: process.env.DATABASE_CONNECTION_STRING });
-    await db.sql`
+    inserted = await db.sql`
       INSERT INTO orders (square_order_id, square_payment_id, customer_name, customer_email, items, total_amount, status)
       VALUES (${payment.order_id || null}, ${payment.id}, ${customerName}, ${customerEmail}, ${JSON.stringify(items)}::jsonb, ${totalAmount}, 'paid')
       ON CONFLICT (square_payment_id) DO NOTHING
+      RETURNING id
     `;
   } catch (e) {
     return { statusCode: 500, body: 'Could not save order.' };
+  }
+
+  // Auto stock drop: subtract each sold item from its product's stock.
+  // Only runs when the order row was newly inserted, so Square
+  // re-sending the same webhook never subtracts twice. Matches by
+  // slug (sent as line-item metadata from create-checkout.js), falling
+  // back to the product name for checkouts created before that
+  // existed. Stock never goes below 0.
+  if (inserted && inserted.length > 0) {
+    for (const item of items) {
+      try {
+        if (item.slug) {
+          await db.sql`
+            UPDATE products SET stock = GREATEST(stock - ${item.qty}, 0), updated_at = now()
+            WHERE slug = ${item.slug}
+          `;
+        } else if (item.name) {
+          await db.sql`
+            UPDATE products SET stock = GREATEST(stock - ${item.qty}, 0), updated_at = now()
+            WHERE name = ${item.name}
+          `;
+        }
+      } catch (e) {
+        // A stock update failing shouldn't fail the webhook — the
+        // order is already saved, and stock can be fixed by hand.
+        console.error('Stock update failed for', item.slug || item.name, e && e.message);
+      }
+    }
   }
 
   return { statusCode: 200, body: 'OK' };

@@ -54,8 +54,11 @@ exports.handler = async function (event) {
 
   // Build Square line items from the cart. Prices on the site are
   // stored in whole dollars (e.g. 32), Square wants cents (3200).
+  // The product slug rides along as line-item metadata so that
+  // square-webhook.js can subtract the sold quantity from the right
+  // product's stock once the payment completes.
   const lineItems = cart.map(function (item) {
-    return {
+    const lineItem = {
       name: String(item.name).slice(0, 500),
       quantity: String(item.qty || 1),
       base_price_money: {
@@ -63,6 +66,10 @@ exports.handler = async function (event) {
         currency: 'USD'
       }
     };
+    if (item.id) {
+      lineItem.metadata = { slug: String(item.id).slice(0, 255) };
+    }
+    return lineItem;
   });
 
   const idempotencyKey =

@@ -396,7 +396,7 @@ document.addEventListener('DOMContentLoaded', function () {
      "gift-card" product gets a dropdown; the chosen amount rides in
      the cart id ("gift-card:100") and create-checkout.js charges it,
      but only if it's in that file's GIFT_CARD_AMOUNTS list too. */
-  var GIFT_CARD_AMOUNTS = [25, 50, 100, 150];
+  var GIFT_CARD_AMOUNTS = [50, 75, 100, 150, 200, 250, 300, 400, 500];
   var GIFT_CARD_DEFAULT = 50;
   function initGiftCardPickers (root) {
     var scope = root || document;

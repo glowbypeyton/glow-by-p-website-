@@ -24,7 +24,7 @@ const SQUARE_API_BASE = 'https://connect.squareup.com/v2';
 // official rate table. Update this if the rate ever changes.
 const SALES_TAX_PERCENT = 8.75;
 // Gift card amounts customers can pick (keep in sync with script.js).
-const GIFT_CARD_AMOUNTS = [25, 50, 100, 150];
+const GIFT_CARD_AMOUNTS = [50, 75, 100, 150, 200, 250, 300, 400, 500];
 
 exports.handler = async function (event) {
   if (event.httpMethod !== 'POST') {

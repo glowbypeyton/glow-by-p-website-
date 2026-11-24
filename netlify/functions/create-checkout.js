@@ -23,6 +23,8 @@ const SQUARE_API_BASE = 'https://connect.squareup.com/v2';
 // Combined CA sales tax rate for Murrieta, 92563 — from CDTFA's
 // official rate table. Update this if the rate ever changes.
 const SALES_TAX_PERCENT = 8.75;
+// Gift card amounts customers can pick (keep in sync with script.js).
+const GIFT_CARD_AMOUNTS = [25, 50, 100, 150];
 
 exports.handler = async function (event) {
   if (event.httpMethod !== 'POST') {
@@ -73,18 +75,33 @@ exports.handler = async function (event) {
   const saleOn = isSaleActive();
   const SALE_UID = 'store-sale';
   let anyDiscounted = false;
+  const TAX_UID = 'sales-tax';
+  let anyTaxed = false;
   const lineItems = [];
   for (const item of cart) {
-    const product = productsBySlug[String(item && item.id)];
+    // Gift cards come in as "gift-card:100" — the chosen amount must be
+    // one of GIFT_CARD_AMOUNTS (keep in sync with script.js).
+    let id = String(item && item.id);
+    let giftAmount = null;
+    const giftMatch = /^gift-card:(\d+)$/.exec(id);
+    if (giftMatch) {
+      giftAmount = parseInt(giftMatch[1], 10);
+      if (GIFT_CARD_AMOUNTS.indexOf(giftAmount) === -1) {
+        return { statusCode: 400, body: JSON.stringify({ error: 'Please choose a gift card amount from the list.' }) };
+      }
+      id = 'gift-card';
+    }
+    const product = productsBySlug[id];
     if (!product) {
       return { statusCode: 400, body: JSON.stringify({ error: 'An item in your cart is no longer available. Please remove it and try again.' }) };
     }
     const qty = Math.min(Math.max(parseInt(item.qty, 10) || 1, 1), 99);
+    const unitPrice = giftAmount !== null ? giftAmount : Number(product.price);
     const lineItem = {
-      name: String(product.name).slice(0, 500),
+      name: (String(product.name) + (giftAmount !== null ? ' – $' + giftAmount : '')).slice(0, 500),
       quantity: String(qty),
       base_price_money: {
-        amount: Math.round(Number(product.price) * 100),
+        amount: Math.round(unitPrice * 100),
         currency: 'USD'
       },
       metadata: { slug: String(product.slug).slice(0, 255) }
@@ -92,6 +109,11 @@ exports.handler = async function (event) {
     if (saleOn && appliesTo(product)) {
       lineItem.applied_discounts = [{ discount_uid: SALE_UID }];
       anyDiscounted = true;
+    }
+    // Gift cards aren't taxable in CA; everything else gets sales tax.
+    if (product.category !== 'gifts') {
+      lineItem.applied_taxes = [{ tax_uid: TAX_UID }];
+      anyTaxed = true;
     }
     lineItems.push(lineItem);
   }
@@ -124,18 +146,20 @@ exports.handler = async function (event) {
             }]
           } : {}),
           // Murrieta, CA (92563) combined sales tax rate — confirmed
-          // against CDTFA's official rate table. Applied to the whole
-          // order automatically; Square adds it as a separate line on
-          // checkout, it's not baked into each item's price above.
-          // If this ever changes, update SALES_TAX_PERCENT only.
-          taxes: [
-            {
-              uid: 'sales-tax',
-              name: 'Sales Tax',
-              percentage: String(SALES_TAX_PERCENT),
-              scope: 'ORDER'
-            }
-          ],
+          // against CDTFA's official rate table. Applied to every line
+          // item tagged above (all products except gift cards); Square
+          // adds it as a separate line on checkout, it's not baked into
+          // each item's price. If this changes, update SALES_TAX_PERCENT.
+          ...(anyTaxed ? {
+            taxes: [
+              {
+                uid: TAX_UID,
+                name: 'Sales Tax',
+                percentage: String(SALES_TAX_PERCENT),
+                scope: 'LINE_ITEM'
+              }
+            ]
+          } : {}),
           // Marks every order as in-store pickup — Square's hosted
           // checkout shows the pickup location's address (whatever is
           // set on this Location in your Square dashboard) and this

@@ -392,7 +392,53 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  /* Gift card amount picker. Any Add to Cart / Buy Now button for the
+     "gift-card" product gets a dropdown; the chosen amount rides in
+     the cart id ("gift-card:100") and create-checkout.js charges it,
+     but only if it's in that file's GIFT_CARD_AMOUNTS list too. */
+  var GIFT_CARD_AMOUNTS = [25, 50, 100, 150];
+  var GIFT_CARD_DEFAULT = 50;
+  function initGiftCardPickers (root) {
+    var scope = root || document;
+    var buttons = scope.querySelectorAll('[data-product-id="gift-card"]');
+    if (!buttons.length) return;
+    var host = buttons[0].parentElement;
+    if (host.parentElement.querySelector('.gift-amount')) return;
+    var baseName = buttons[0].getAttribute('data-product-name');
+    var card = host.closest('.product-card');
+    var priceEl = card ? card.querySelector('.product-price') : document.getElementById('prodPrice');
+
+    var wrap = document.createElement('label');
+    wrap.className = 'gift-amount';
+    wrap.style.cssText = 'display:flex;align-items:center;gap:10px;margin-bottom:12px;';
+    wrap.innerHTML = '<span>Amount</span>';
+    var select = document.createElement('select');
+    select.style.cssText = 'padding:8px 10px;border:1px solid var(--line);border-radius:8px;font:inherit;background:#fff;';
+    GIFT_CARD_AMOUNTS.forEach(function (amt) {
+      var opt = document.createElement('option');
+      opt.value = amt;
+      opt.textContent = '$' + amt;
+      if (amt === GIFT_CARD_DEFAULT) opt.selected = true;
+      select.appendChild(opt);
+    });
+    wrap.appendChild(select);
+    host.parentElement.insertBefore(wrap, host);
+
+    function apply () {
+      var amt = parseInt(select.value, 10);
+      buttons.forEach(function (btn) {
+        btn.setAttribute('data-product-id', 'gift-card:' + amt);
+        btn.setAttribute('data-product-name', baseName + ' – $' + amt);
+        btn.setAttribute('data-product-price', amt);
+      });
+      if (priceEl) priceEl.textContent = '$' + amt;
+    }
+    select.addEventListener('change', apply);
+    apply();
+  }
+
   function initCartUI (root) {
+    initGiftCardPickers(root);
     initStockDisplays(root);
     bindCartButtons(root);
   }

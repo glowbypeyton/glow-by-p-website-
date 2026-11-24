@@ -202,6 +202,13 @@ fetch(window.GlowByPSale.productsUrl())
     // Wire up Add to Cart buttons + stock notes on the content we just injected.
     if (window.GlowByPCart) { window.GlowByPCart.initCartUI(container); }
 
+    // Links like shop.html#gifts point at a category section that only
+    // exists now that the products have loaded, so jump to it here.
+    if (window.location.hash) {
+      var target = document.getElementById(decodeURIComponent(window.location.hash.slice(1)));
+      if (target) { target.classList.add('reveal', 'in'); target.scrollIntoView(); }
+    }
+
     // Fade the newly-injected sections in, same as the rest of the
     // site's .reveal elements — script.js's own observer already ran
     // before this fetch resolved, so this content needs its own pass.

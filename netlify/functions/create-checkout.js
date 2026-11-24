@@ -23,9 +23,6 @@ const SQUARE_API_BASE = 'https://connect.squareup.com/v2';
 // Combined CA sales tax rate for Murrieta, 92563 — from CDTFA's
 // official rate table. Update this if the rate ever changes.
 const SALES_TAX_PERCENT = 8.75;
-// Gift card amounts customers can pick (keep in sync with script.js).
-const GIFT_CARD_AMOUNTS = [50, 75, 100, 150, 200, 250, 300, 400, 500];
-
 exports.handler = async function (event) {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method not allowed' };
@@ -79,29 +76,23 @@ exports.handler = async function (event) {
   let anyTaxed = false;
   const lineItems = [];
   for (const item of cart) {
-    // Gift cards come in as "gift-card:100" — the chosen amount must be
-    // one of GIFT_CARD_AMOUNTS (keep in sync with script.js).
-    let id = String(item && item.id);
-    let giftAmount = null;
-    const giftMatch = /^gift-card:(\d+)$/.exec(id);
-    if (giftMatch) {
-      giftAmount = parseInt(giftMatch[1], 10);
-      if (GIFT_CARD_AMOUNTS.indexOf(giftAmount) === -1) {
-        return { statusCode: 400, body: JSON.stringify({ error: 'Please choose a gift card amount from the list.' }) };
-      }
-      id = 'gift-card';
-    }
+    const id = String(item && item.id);
     const product = productsBySlug[id];
+    // Gift cards are sold through Backbar now (it issues the card and
+    // tracks the balance), so they can't be bought here — this also
+    // catches any left in a cart from before ("gift-card" or "gift-card:100").
+    if (id.indexOf('gift-card') === 0 || (product && product.category === 'gifts')) {
+      return { statusCode: 400, body: JSON.stringify({ error: 'Gift cards are now sold on our booking site. Please remove the gift card from your cart, then use the "Buy a Gift Card" button in the shop.' }) };
+    }
     if (!product) {
       return { statusCode: 400, body: JSON.stringify({ error: 'An item in your cart is no longer available. Please remove it and try again.' }) };
     }
     const qty = Math.min(Math.max(parseInt(item.qty, 10) || 1, 1), 99);
-    const unitPrice = giftAmount !== null ? giftAmount : Number(product.price);
     const lineItem = {
-      name: (String(product.name) + (giftAmount !== null ? ' – $' + giftAmount : '')).slice(0, 500),
+      name: String(product.name).slice(0, 500),
       quantity: String(qty),
       base_price_money: {
-        amount: Math.round(unitPrice * 100),
+        amount: Math.round(Number(product.price) * 100),
         currency: 'USD'
       },
       metadata: { slug: String(product.slug).slice(0, 255) }

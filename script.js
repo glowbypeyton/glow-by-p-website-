@@ -392,53 +392,34 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  /* Gift card amount picker. Any Add to Cart / Buy Now button for the
-     "gift-card" product gets a dropdown; the chosen amount rides in
-     the cart id ("gift-card:100") and create-checkout.js charges it,
-     but only if it's in that file's GIFT_CARD_AMOUNTS list too. */
-  var GIFT_CARD_AMOUNTS = [50, 75, 100, 150, 200, 250, 300, 400, 500];
-  var GIFT_CARD_DEFAULT = 50;
-  function initGiftCardPickers (root) {
+  /* Gift cards are sold through Backbar (the booking site), which
+     creates the card, emails it, and tracks the balance. Any Add to
+     Cart / Buy Now button for the "gift-card" product is swapped for
+     a link there, and create-checkout.js refuses gift cards. */
+  var GIFT_CARD_URL = 'https://backbarhq.com/gift/glow-by-p';
+  function initGiftCardLinks (root) {
     var scope = root || document;
     var buttons = scope.querySelectorAll('[data-product-id="gift-card"]');
     if (!buttons.length) return;
     var host = buttons[0].parentElement;
-    if (host.parentElement.querySelector('.gift-amount')) return;
-    var baseName = buttons[0].getAttribute('data-product-name');
+    buttons.forEach(function (btn) {
+      ['data-add-to-cart', 'data-buy-now', 'data-stock', 'data-product-id'].forEach(function (a) { btn.removeAttribute(a); });
+      btn.style.display = 'none';
+    });
+    var link = document.createElement('a');
+    link.className = 'btn btn-solid' + (host.id === 'prodActions' ? ' btn-full' : '');
+    link.href = GIFT_CARD_URL;
+    link.target = '_blank';
+    link.rel = 'noopener';
+    link.textContent = 'Buy a Gift Card';
+    host.appendChild(link);
     var card = host.closest('.product-card');
     var priceEl = card ? card.querySelector('.product-price') : document.getElementById('prodPrice');
-
-    var wrap = document.createElement('label');
-    wrap.className = 'gift-amount';
-    wrap.style.cssText = 'display:flex;align-items:center;gap:10px;margin-bottom:12px;';
-    wrap.innerHTML = '<span>Amount</span>';
-    var select = document.createElement('select');
-    select.style.cssText = 'padding:8px 10px;border:1px solid var(--line);border-radius:8px;font:inherit;background:#fff;';
-    GIFT_CARD_AMOUNTS.forEach(function (amt) {
-      var opt = document.createElement('option');
-      opt.value = amt;
-      opt.textContent = '$' + amt;
-      if (amt === GIFT_CARD_DEFAULT) opt.selected = true;
-      select.appendChild(opt);
-    });
-    wrap.appendChild(select);
-    host.parentElement.insertBefore(wrap, host);
-
-    function apply () {
-      var amt = parseInt(select.value, 10);
-      buttons.forEach(function (btn) {
-        btn.setAttribute('data-product-id', 'gift-card:' + amt);
-        btn.setAttribute('data-product-name', baseName + ' – $' + amt);
-        btn.setAttribute('data-product-price', amt);
-      });
-      if (priceEl) priceEl.textContent = '$' + amt;
-    }
-    select.addEventListener('change', apply);
-    apply();
+    if (priceEl) priceEl.textContent = '';
   }
 
   function initCartUI (root) {
-    initGiftCardPickers(root);
+    initGiftCardLinks(root);
     initStockDisplays(root);
     bindCartButtons(root);
   }
